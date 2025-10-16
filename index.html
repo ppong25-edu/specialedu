@@ -3,32 +3,44 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>선택과목 고르기 – 하이브리드(이미지+SVG) 고정판</title>
+<title>선택과목 고르기 – 멀티페이지(이미지+SVG)</title>
 <style>
   :root { --card:#ffffff; --muted:#667085; --accent:#0f172a; --primary:#2563eb; }
   * { box-sizing:border-box; }
-  body { margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",Arial,"Apple SD Gothic Neo",sans-serif; background:linear-gradient(#fff, #f6f7fb); color:var(--accent);}
+  body { margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",Arial,"Apple SD Gothic Neo",sans-serif; background:linear-gradient(#fff,#f6f7fb); color:var(--accent); }
   .container { max-width:1024px; margin:0 auto; padding:20px; }
   header { display:flex; gap:12px; justify-content:space-between; align-items:center; flex-wrap:wrap; }
   h1 { margin:0; font-size:clamp(22px,3vw,32px); font-weight:800; letter-spacing:-.2px; }
-  .muted{ color:var(--muted); }
+  .muted { color:var(--muted); }
   .toolbar { display:flex; gap:8px; flex-wrap:wrap; }
-  .toolbar .btn { padding:10px 14px; border:1px solid #d1d5db; border-radius:10px; background:#fff; cursor:pointer; }
+  .btn { padding:10px 14px; border:1px solid #d1d5db; border-radius:10px; background:#fff; cursor:pointer; }
+  .btn.primary { background:var(--primary); color:#fff; border-color:var(--primary); }
+  .hero { padding:36px 18px; text-align:center; }
+  .hero h1 { font-size:clamp(26px,4vw,42px); margin:0; }
+  .hero p { margin:10px auto 0; max-width:700px; color:var(--muted); }
+  .cta { margin-top:16px; display:inline-flex; gap:10px; flex-wrap:wrap; }
+  .form { background:var(--card); border:1px solid #e5e7eb; border-radius:16px; box-shadow:0 4px 16px rgba(0,0,0,.04); padding:18px; }
+  .form .grid { display:grid; grid-template-columns:1fr; gap:12px; }
+  @media (min-width:760px){ .form .grid { grid-template-columns:repeat(3,1fr); } }
+  label { font-weight:700; font-size:14px; display:block; margin-bottom:6px; }
+  input { width:100%; padding:12px; border:1px solid #d1d5db; border-radius:10px; }
   .progress-wrap { margin-top:10px; }
   progress { width:100%; height:14px; appearance:none; }
   progress::-webkit-progress-bar { background:#eef2ff; border-radius:12px; }
   progress::-webkit-progress-value { background:linear-gradient(90deg,#60a5fa,#2563eb); border-radius:12px; }
   .guide { text-align:center; font-size:20px; font-weight:800; margin:18px 0 10px; }
   .row { display:grid; grid-template-columns:1fr; gap:16px; }
-  @media (min-width:760px){ .row{ grid-template-columns:1fr 1fr; } }
+  @media (min-width:760px){ .row { grid-template-columns:1fr 1fr; } }
   .card { background:var(--card); border:1px solid #e5e7eb; border-radius:16px; box-shadow:0 6px 16px rgba(0,0,0,.06); overflow:hidden; }
   .card-body { padding:14px; text-align:center; }
   .illus { position:relative; width:100%; padding-top:66%; border-radius:14px; overflow:hidden; display:flex; align-items:center; justify-content:center; cursor:pointer; }
   .illus .wrap { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
-  .illus img { width:80%; height:80%; object-fit:contain; display:none; } /* 기본은 숨김, 성공 로드 시 표시 */
+  .illus img { width:80%; height:80%; object-fit:contain; display:none; } /* 성공 로드시 표시 */
   .illus svg { width:70%; height:70%; filter:drop-shadow(0 6px 10px rgba(0,0,0,.12)); }
   .title { font-weight:700; font-size:16px; margin-top:10px; }
-  footer{ text-align:center; margin:24px 0 8px; font-size:12px; color:var(--muted); }
+  footer { text-align:center; margin:24px 0 8px; font-size:12px; color:var(--muted); }
+  .hidden { display:none !important; }
+  @media print { .toolbar, .hero, .form, #page-start, #page-info { display:none !important; } }
 </style>
 </head>
 <body>
@@ -46,9 +58,37 @@
       </div>
     </header>
 
-    <section id="page-game">
+    <!-- 시작 페이지 -->
+    <section id="page-start" class="hero">
+      <h1>선택과목 고르기</h1>
+      <p>두 가지 활동 중 더 끌리는 것을 고르며, 나에게 맞는 교과(선택과목) 흥미를 알아봅니다. 총 <b><span id="roundTotal">30</span>문항</b>입니다.</p>
+      <div class="cta">
+        <button class="btn primary" id="startToInfo">정보 입력하고 시작</button>
+        <button class="btn" id="startToGame">바로 진행</button>
+      </div>
+    </section>
+
+    <!-- 정보 입력 -->
+    <section id="page-info" class="hidden">
+      <h2 style="margin:12px 0 8px;font-weight:800;">학생 정보 입력</h2>
+      <div class="form">
+        <div class="grid">
+          <div><label for="school">학교명</label><input id="school" placeholder="예) ○○특수학교" /></div>
+          <div><label for="grade">학년</label><input id="grade" placeholder="예) 1학년 / 고1" /></div>
+          <div><label for="name">성명</label><input id="name" placeholder="예) 홍길동" /></div>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn primary" id="infoToGame">진행 시작</button>
+          <button class="btn" id="infoClear">입력 지우기</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 진행 화면 -->
+    <section id="page-game" class="hidden">
       <div class="progress-wrap">
         <progress id="progress" value="0" max="30"></progress>
+        <div class="muted" style="font-size:12px;">진행도: <span id="stepNow">0</span>/<span id="stepMax">30</span></div>
       </div>
       <div class="guide">아래의 두 가지 중, 더 흥미로운 활동을 선택해주세요.</div>
       <div class="row" id="choices"></div>
@@ -75,7 +115,7 @@ const $ = s => document.querySelector(s);
 function randPick(a){ return a[Math.floor(Math.random()*a.length)]; }
 function makeGradient(a,b){ return `linear-gradient(135deg, ${a}, ${b})`; }
 function makeRounds(n=TOTAL_ROUNDS){
-  const rs=[];
+  const rs = [];
   for(let i=0;i<n;i++){
     let a=randPick(SUBJECTS), b=randPick(SUBJECTS);
     while(b.id===a.id) b=randPick(SUBJECTS);
@@ -84,7 +124,25 @@ function makeRounds(n=TOTAL_ROUNDS){
   return rs;
 }
 
-/* ===== 아이콘: 이미지 성공 시 이미지 표시, 실패 시 SVG로 대체 ===== */
+/* ===== 학생 정보 저장/로드 ===== */
+let student = { school:"", grade:"", name:"" };
+function saveStudent(){
+  student.school = $('#school')?.value?.trim() || "";
+  student.grade  = $('#grade')?.value?.trim()  || "";
+  student.name   = $('#name')?.value?.trim()   || "";
+  localStorage.setItem("worldcup_student_v3", JSON.stringify(student));
+}
+function loadStudent(){
+  try{
+    const s = JSON.parse(localStorage.getItem("worldcup_student_v3") || "{}");
+    student = Object.assign({school:"",grade:"",name:""}, s);
+    if($('#school')) $('#school').value = student.school;
+    if($('#grade'))  $('#grade').value  = student.grade;
+    if($('#name'))   $('#name').value   = student.name;
+  }catch(e){}
+}
+
+/* ===== 아이콘: 이미지 로드 성공 시 이미지, 실패 시 SVG ===== */
 function svgFallback(key){
   switch(key){
     case "leaf": return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 80c18-10 28-26 28-40-10-2-22 0-28 8-6-8-18-10-28-8 0 14 10 30 28 40z" fill="#86efac" stroke="#0f172a" stroke-width="2"/><path d="M50 48v32" stroke="#0f172a" stroke-width="2"/></svg>`;
@@ -97,52 +155,57 @@ function svgFallback(key){
     default: return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="#fff"/></svg>`;
   }
 }
-
-function renderChoiceCard(d){
-  const card = document.createElement('div'); card.className='card';
-  card.innerHTML = `
+function choiceCard(d){
+  const el = document.createElement('div'); el.className='card';
+  el.innerHTML = `
     <div class="card-body">
-      <div class="illus" style="background:${makeGradient(d.colorFrom, d.colorTo)}">
+      <div class="illus" style="background:${makeGradient(d.colorFrom,d.colorTo)}">
         <div class="wrap">
           <img alt="${d.key}" src="images/${d.key}.png">
           <div class="svgwrap">${svgFallback(d.key)}</div>
         </div>
       </div>
       <div class="title">${d.highlight}</div>
-    </div>
-  `;
-  // 이미지가 성공적으로 로드되면 SVG를 숨김
-  const img = card.querySelector('img');
-  const svg = card.querySelector('.svgwrap');
+    </div>`;
+  const img = el.querySelector('img'); const svg = el.querySelector('.svgwrap');
   img.addEventListener('load', ()=>{ img.style.display='block'; svg.style.display='none'; });
   img.addEventListener('error', ()=>{ img.style.display='none'; svg.style.display='block'; });
-  // 그림 클릭으로 선택
-  card.querySelector('.illus').addEventListener('click', ()=>choose(d.id));
-  return card;
+  el.querySelector('.illus').addEventListener('click', ()=>choose(d.id));
+  return el;
 }
 
 /* ===== 진행 로직 ===== */
 let rounds=[], step=0, scores=Object.fromEntries(SUBJECTS.map(s=>[s.id,0]));
 function renderStep(){
-  if(!rounds.length) rounds = makeRounds();
+  if(!rounds.length) rounds=makeRounds();
+  $('#stepNow').textContent = step;
   $('#progress').value = step;
   const cur = rounds[step], box = $('#choices'); box.innerHTML='';
-  box.appendChild(renderChoiceCard(cur.a));
-  box.appendChild(renderChoiceCard(cur.b));
+  box.appendChild(choiceCard(cur.a));
+  box.appendChild(choiceCard(cur.b));
 }
 function choose(id){
   scores[id]=(scores[id]||0)+1;
-  if(step+1>=TOTAL_ROUNDS){ step=0; rounds=makeRounds(); renderStep(); } // (결과 페이지 없이) 루프
+  if(step+1>=TOTAL_ROUNDS){ step=0; rounds=makeRounds(); renderStep(); }
   else { step++; renderStep(); }
 }
 
-/* ===== 시작 ===== */
-window.addEventListener('DOMContentLoaded', ()=>{
-  renderStep();
-  $('#navGame').addEventListener('click', renderStep);
-  $('#navStart').addEventListener('click', ()=>{ step=0; rounds=makeRounds(); renderStep(); });
-  $('#printBtn').addEventListener('click', ()=>window.print());
-});
+/* ===== 네비/페이지 전환 ===== */
+function showPage(id){ ["page-start","page-info","page-game"].forEach(x => document.getElementById(x).classList.add("hidden")); document.getElementById(id).classList.remove("hidden"); }
+$('#navStart').addEventListener('click', ()=>showPage('page-start'));
+$('#navInfo').addEventListener('click', ()=>{ showPage('page-info'); loadStudent(); });
+$('#navGame').addEventListener('click', ()=>{ showPage('page-game'); renderStep(); });
+$('#printBtn').addEventListener('click', ()=>window.print());
+$('#startToInfo').addEventListener('click', ()=>showPage('page-info'));
+$('#startToGame').addEventListener('click', ()=>{ showPage('page-game'); renderStep(); });
+$('#infoToGame').addEventListener('click', ()=>{ saveStudent(); showPage('page-game'); renderStep(); });
+$('#infoClear').addEventListener('click', ()=>{ ['school','grade','name'].forEach(id=>{ const i=document.getElementById(id); if(i) i.value=''; }); saveStudent(); });
+
+/* ===== 초기화 ===== */
+document.getElementById('roundTotal').textContent = TOTAL_ROUNDS;
+document.getElementById('stepMax').textContent   = TOTAL_ROUNDS;
+loadStudent();
+showPage('page-start');
 </script>
 </body>
 </html>
