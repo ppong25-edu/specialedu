@@ -52,10 +52,12 @@
   margin: 22px 0 36px;   /* 제목 아래 간격 ↑ */
 }
 
-.hero p { 
-  line-height: 1.9;      /* 문장 줄간격 ↑ (2,3번 사이도 넓어짐) */
-  margin: 0 0 18px;      /* 문장 아래 간격 ↑ */
-  text-align: center;    /* 문장 가운데 정렬 */
+.hero p {
+  line-height: 1.9;
+  margin: 0 auto 18px;   /* ← 좌우 auto로 박스 자체 중앙 */
+  max-width: 700px;
+  color: var(--muted);
+  text-align: center;    /* 문장도 가운데 */
 }
 
 .hero .cta { 
