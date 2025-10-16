@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>선택과목 고르기 – 멀티페이지(이미지+SVG)</title>
+<title>선택과목 고르기 – 멀티페이지(이미지+SVG, 결과화면)</title>
 <style>
   :root { --card:#ffffff; --muted:#667085; --accent:#0f172a; --primary:#2563eb; }
   * { box-sizing:border-box; }
@@ -40,7 +40,13 @@
   .title { font-weight:700; font-size:16px; margin-top:10px; }
   footer { text-align:center; margin:24px 0 8px; font-size:12px; color:var(--muted); }
   .hidden { display:none !important; }
-  @media print { .toolbar, .hero, .form, #page-start, #page-info { display:none !important; } }
+  /* 결과 화면 */
+  .grid-3 { display:grid; grid-template-columns:1fr; gap:12px; }
+  @media (min-width:840px){ .grid-3 { grid-template-columns:repeat(3,1fr); } }
+  .badge { background:#fff; border:1px solid #e5e7eb; border-radius:14px; padding:14px; box-shadow:0 4px 10px rgba(0,0,0,.04); }
+  .badge h4 { margin:0 0 6px; font-size:15px; }
+  .rank { font-weight:800; margin-right:6px; }
+  @media print { .toolbar, .hero, #page-start, #page-info, .no-print { display:none !important; } .container{max-width:900px;} }
 </style>
 </head>
 <body>
@@ -58,7 +64,7 @@
       </div>
     </header>
 
-    <!-- 시작 페이지 -->
+    <!-- 시작 -->
     <section id="page-start" class="hero">
       <h1>선택과목 고르기</h1>
       <p>두 가지 활동 중 더 끌리는 것을 고르며, 나에게 맞는 교과(선택과목) 흥미를 알아봅니다. 총 <b><span id="roundTotal">30</span>문항</b>입니다.</p>
@@ -70,21 +76,21 @@
 
     <!-- 정보 입력 -->
     <section id="page-info" class="hidden">
-      <h2 style="margin:12px 0 8px;font-weight:800;">학생 정보 입력</h2>
+      <h2 style="margin:12px 0 8px; font-weight:800;">학생 정보 입력</h2>
       <div class="form">
         <div class="grid">
           <div><label for="school">학교명</label><input id="school" placeholder="예) ○○특수학교" /></div>
           <div><label for="grade">학년</label><input id="grade" placeholder="예) 1학년 / 고1" /></div>
           <div><label for="name">성명</label><input id="name" placeholder="예) 홍길동" /></div>
         </div>
-        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
           <button class="btn primary" id="infoToGame">진행 시작</button>
           <button class="btn" id="infoClear">입력 지우기</button>
         </div>
       </div>
     </section>
 
-    <!-- 진행 화면 -->
+    <!-- 진행 -->
     <section id="page-game" class="hidden">
       <div class="progress-wrap">
         <progress id="progress" value="0" max="30"></progress>
@@ -94,11 +100,24 @@
       <div class="row" id="choices"></div>
     </section>
 
+    <!-- 결과 -->
+    <section id="page-result" class="hidden" style="margin-top:18px;">
+      <h2 style="margin:0 0 8px; font-weight:800;">결과</h2>
+      <div id="studentMeta" class="muted" style="font-size:13px; margin-bottom:10px;"></div>
+      <div class="grid-3" id="rankGrid"></div>
+      <div class="no-print" style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn primary" id="againBtn">다시 진행</button>
+        <button class="btn" id="reshuffleBtn">새로 섞어서 진행</button>
+        <button class="btn" id="downloadBtn">결과 JSON 저장</button>
+        <button class="btn" id="printBtn2">인쇄/PDF</button>
+      </div>
+    </section>
+
     <footer>© 2025 특수학교고교학점제 전문적학습공동체</footer>
   </div>
 
 <script>
-/* ===== 데이터 ===== */
+/* ==== 데이터 ==== */
 const SUBJECTS = [
   { id:"외식서비스", key:"food",   colorFrom:"#ffedd5", colorTo:"#ffe4e6", activities:["손님 맞이 인사하기","음식 주문받기","테이블 세팅하기","음식 서빙하기","주방기기 사용하기","식재료 손질·계량·조리","음료·디저트 제조"]},
   { id:"대인서비스", key:"care",   colorFrom:"#dbeafe", colorTo:"#dcfce7", activities:["인사 예절·감정 표현","고객 상담하기","보행·식사 돕기","세차·세탁·청소 보조","손톱관리·미용 보조"]},
@@ -110,54 +129,40 @@ const SUBJECTS = [
 ];
 const TOTAL_ROUNDS = 30;
 
-/* ===== 유틸 ===== */
+/* ==== 공통 ==== */
 const $ = s => document.querySelector(s);
 function randPick(a){ return a[Math.floor(Math.random()*a.length)]; }
 function makeGradient(a,b){ return `linear-gradient(135deg, ${a}, ${b})`; }
 function makeRounds(n=TOTAL_ROUNDS){
-  const rs = [];
-  for(let i=0;i<n;i++){
+  const rs=[]; for(let i=0;i<n;i++){
     let a=randPick(SUBJECTS), b=randPick(SUBJECTS);
     while(b.id===a.id) b=randPick(SUBJECTS);
     rs.push({ a:{...a, highlight:randPick(a.activities)}, b:{...b, highlight:randPick(b.activities)} });
-  }
-  return rs;
+  } return rs;
 }
 
-/* ===== 학생 정보 저장/로드 ===== */
-let student = { school:"", grade:"", name:"" };
-function saveStudent(){
-  student.school = $('#school')?.value?.trim() || "";
-  student.grade  = $('#grade')?.value?.trim()  || "";
-  student.name   = $('#name')?.value?.trim()   || "";
-  localStorage.setItem("worldcup_student_v3", JSON.stringify(student));
-}
-function loadStudent(){
-  try{
-    const s = JSON.parse(localStorage.getItem("worldcup_student_v3") || "{}");
-    student = Object.assign({school:"",grade:"",name:""}, s);
-    if($('#school')) $('#school').value = student.school;
-    if($('#grade'))  $('#grade').value  = student.grade;
-    if($('#name'))   $('#name').value   = student.name;
-  }catch(e){}
-}
+/* ==== 학생 정보 ==== */
+let student={school:"",grade:"",name:""};
+function saveStudent(){ student.school=$('#school')?.value?.trim()||""; student.grade=$('#grade')?.value?.trim()||""; student.name=$('#name')?.value?.trim()||""; localStorage.setItem("worldcup_student_v4", JSON.stringify(student)); }
+function loadStudent(){ try{ const s=JSON.parse(localStorage.getItem("worldcup_student_v4")||"{}"); student=Object.assign({school:"",grade:"",name:""},s); if($('#school')) $('#school').value=student.school; if($('#grade')) $('#grade').value=student.grade; if($('#name')) $('#name').value=student.name; }catch(e){} }
+function updateStudentMeta(){ const t=[student.school,student.grade,student.name].filter(Boolean).join(" · "); $('#studentMeta').textContent = t ? `학생정보: ${t}` : "학생정보: (미입력)"; }
 
-/* ===== 아이콘: 이미지 로드 성공 시 이미지, 실패 시 SVG ===== */
+/* ==== 아이콘 (이미지 성공→이미지, 실패→SVG) ==== */
 function svgFallback(key){
   switch(key){
-    case "leaf": return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 80c18-10 28-26 28-40-10-2-22 0-28 8-6-8-18-10-28-8 0 14 10 30 28 40z" fill="#86efac" stroke="#0f172a" stroke-width="2"/><path d="M50 48v32" stroke="#0f172a" stroke-width="2"/></svg>`;
-    case "care": return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M20 45c0-8 6-14 14-14 6 0 10 3 16 10 6-7 10-10 16-10 8 0 14 6 14 14 0 16-30 28-30 28S20 61 20 45z" fill="#93c5fd" stroke="#0f172a" stroke-width="2"/></svg>`;
-    case "food": return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><ellipse cx="50" cy="70" rx="32" ry="10" fill="#fff" stroke="#0f172a" stroke-width="2"/><path d="M18 70h64" stroke="#0f172a" stroke-width="3"/><path d="M30 68c0-10 40-10 40 0" fill="#fb923c" stroke="#0f172a" stroke-width="2"/><circle cx="30" cy="45" r="10" fill="#fde68a" stroke="#0f172a" stroke-width="2"/><ellipse cx="66" cy="48" rx="14" ry="11" fill="#fca5a5" stroke="#0f172a" stroke-width="2"/></svg>`;
-    case "tools": return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M20 70l20-20 10 10-20 20z" fill="#fde68a" stroke="#0f172a" stroke-width="2"/><path d="M52 28l20 20-8 8-20-20z" fill="#fff" stroke="#0f172a" stroke-width="2"/><circle cx="65" cy="35" r="6" fill="#fff" stroke="#0f172a" stroke-width="2"/></svg>`;
-    case "box": return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M20 40l30-12 30 12-30 12-30-12z" fill="#ddd6fe" stroke="#0f172a" stroke-width="2"/><path d="M20 40v30l30 12V52L20 40z" fill="#e9d5ff" stroke="#0f172a" stroke-width="2"/><path d="M50 52l30-12v30L50 82V52z" fill="#f5d0fe" stroke="#0f172a" stroke-width="2"/></svg>`;
-    case "laptop": return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect x="22" y="28" width="56" height="34" rx="4" fill="#c7d2fe" stroke="#0f172a" stroke-width="2"/><rect x="16" y="64" width="68" height="10" rx="2" fill="#93c5fd" stroke="#0f172a" stroke-width="2"/><path d="M22 58h56" stroke="#0f172a" stroke-width="2"/></svg>`;
-    case "files": return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect x="26" y="18" width="40" height="54" rx="4" fill="#e5e7eb" stroke="#0f172a" stroke-width="2"/><rect x="36" y="28" width="40" height="54" rx="4" fill="#f3f4f6" stroke="#0f172a" stroke-width="2"/><path d="M40 40h24M40 48h24M40 56h20" stroke="#0f172a" stroke-width="2"/></svg>`;
-    default: return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="#fff"/></svg>`;
+    case "leaf": return `<svg viewBox="0 0 100 100"><path d="M50 80c18-10 28-26 28-40-10-2-22 0-28 8-6-8-18-10-28-8 0 14 10 30 28 40z" fill="#86efac" stroke="#0f172a" stroke-width="2"/><path d="M50 48v32" stroke="#0f172a" stroke-width="2"/></svg>`;
+    case "care": return `<svg viewBox="0 0 100 100"><path d="M20 45c0-8 6-14 14-14 6 0 10 3 16 10 6-7 10-10 16-10 8 0 14 6 14 14 0 16-30 28-30 28S20 61 20 45z" fill="#93c5fd" stroke="#0f172a" stroke-width="2"/></svg>`;
+    case "food": return `<svg viewBox="0 0 100 100"><ellipse cx="50" cy="70" rx="32" ry="10" fill="#fff" stroke="#0f172a" stroke-width="2"/><path d="M18 70h64" stroke="#0f172a" stroke-width="3"/><path d="M30 68c0-10 40-10 40 0" fill="#fb923c" stroke="#0f172a" stroke-width="2"/><circle cx="30" cy="45" r="10" fill="#fde68a" stroke="#0f172a" stroke-width="2"/><ellipse cx="66" cy="48" rx="14" ry="11" fill="#fca5a5" stroke="#0f172a" stroke-width="2"/></svg>`;
+    case "tools": return `<svg viewBox="0 0 100 100"><path d="M20 70l20-20 10 10-20 20z" fill="#fde68a" stroke="#0f172a" stroke-width="2"/><path d="M52 28l20 20-8 8-20-20z" fill="#fff" stroke="#0f172a" stroke-width="2"/><circle cx="65" cy="35" r="6" fill="#fff" stroke="#0f172a" stroke-width="2"/></svg>`;
+    case "box": return `<svg viewBox="0 0 100 100"><path d="M20 40l30-12 30 12-30 12-30-12z" fill="#ddd6fe" stroke="#0f172a" stroke-width="2"/><path d="M20 40v30l30 12V52L20 40z" fill="#e9d5ff" stroke="#0f172a" stroke-width="2"/><path d="M50 52l30-12v30L50 82V52z" fill="#f5d0fe" stroke="#0f172a" stroke-width="2"/></svg>`;
+    case "laptop": return `<svg viewBox="0 0 100 100"><rect x="22" y="28" width="56" height="34" rx="4" fill="#c7d2fe" stroke="#0f172a" stroke-width="2"/><rect x="16" y="64" width="68" height="10" rx="2" fill="#93c5fd" stroke="#0f172a" stroke-width="2"/><path d="M22 58h56" stroke="#0f172a" stroke-width="2"/></svg>`;
+    case "files": return `<svg viewBox="0 0 100 100"><rect x="26" y="18" width="40" height="54" rx="4" fill="#e5e7eb" stroke="#0f172a" stroke-width="2"/><rect x="36" y="28" width="40" height="54" rx="4" fill="#f3f4f6" stroke="#0f172a" stroke-width="2"/><path d="M40 40h24M40 48h24M40 56h20" stroke="#0f172a" stroke-width="2"/></svg>`;
+    default: return `<svg viewBox="0 0 100 100"><rect width="100" height="100" fill="#fff"/></svg>`;
   }
 }
 function choiceCard(d){
-  const el = document.createElement('div'); el.className='card';
-  el.innerHTML = `
+  const el=document.createElement('div'); el.className='card';
+  el.innerHTML=`
     <div class="card-body">
       <div class="illus" style="background:${makeGradient(d.colorFrom,d.colorTo)}">
         <div class="wrap">
@@ -167,14 +172,14 @@ function choiceCard(d){
       </div>
       <div class="title">${d.highlight}</div>
     </div>`;
-  const img = el.querySelector('img'); const svg = el.querySelector('.svgwrap');
+  const img=el.querySelector('img'); const svg=el.querySelector('.svgwrap');
   img.addEventListener('load', ()=>{ img.style.display='block'; svg.style.display='none'; });
   img.addEventListener('error', ()=>{ img.style.display='none'; svg.style.display='block'; });
   el.querySelector('.illus').addEventListener('click', ()=>choose(d.id));
   return el;
 }
 
-/* ===== 진행 로직 ===== */
+/* ==== 진행 로직 ==== */
 let rounds=[], step=0, scores=Object.fromEntries(SUBJECTS.map(s=>[s.id,0]));
 function renderStep(){
   if(!rounds.length) rounds=makeRounds();
@@ -186,12 +191,28 @@ function renderStep(){
 }
 function choose(id){
   scores[id]=(scores[id]||0)+1;
-  if(step+1>=TOTAL_ROUNDS){ step=0; rounds=makeRounds(); renderStep(); }
+  if(step+1>=TOTAL_ROUNDS){ finish(); }
   else { step++; renderStep(); }
 }
 
-/* ===== 네비/페이지 전환 ===== */
-function showPage(id){ ["page-start","page-info","page-game"].forEach(x => document.getElementById(x).classList.add("hidden")); document.getElementById(id).classList.remove("hidden"); }
+/* ==== 결과 ==== */
+function finish(){
+  showPage('page-result');
+  updateStudentMeta();
+  const ranking = SUBJECTS.map(s=>({subject:s, score:scores[s.id]})).sort((a,b)=>b.score-a.score);
+  const grid = $('#rankGrid'); grid.innerHTML='';
+  ranking.forEach((r,i)=>{
+    const div=document.createElement('div'); div.className='badge';
+    const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
+    div.innerHTML = `<h4><span class="rank">${i+1}위</span> ${medal} ${r.subject.id} <span class="muted">(${r.score}점)</span></h4>
+      <ul style="margin:0; padding-left:18px; font-size:13px;">${r.subject.activities.slice(0,4).map(a=>`<li>${a}</li>`).join('')}</ul>`;
+    grid.appendChild(div);
+  });
+  window.scrollTo(0,0);
+}
+
+/* ==== 네비/페이지 전환 ==== */
+function showPage(id){ ["page-start","page-info","page-game","page-result"].forEach(x=>document.getElementById(x).classList.add("hidden")); document.getElementById(id).classList.remove("hidden"); }
 $('#navStart').addEventListener('click', ()=>showPage('page-start'));
 $('#navInfo').addEventListener('click', ()=>{ showPage('page-info'); loadStudent(); });
 $('#navGame').addEventListener('click', ()=>{ showPage('page-game'); renderStep(); });
@@ -201,7 +222,16 @@ $('#startToGame').addEventListener('click', ()=>{ showPage('page-game'); renderS
 $('#infoToGame').addEventListener('click', ()=>{ saveStudent(); showPage('page-game'); renderStep(); });
 $('#infoClear').addEventListener('click', ()=>{ ['school','grade','name'].forEach(id=>{ const i=document.getElementById(id); if(i) i.value=''; }); saveStudent(); });
 
-/* ===== 초기화 ===== */
+/* 결과화면 버튼 */
+$('#againBtn').addEventListener('click', ()=>{ scores=Object.fromEntries(SUBJECTS.map(s=>[s.id,0])); step=0; rounds=makeRounds(); showPage('page-game'); renderStep(); });
+$('#reshuffleBtn').addEventListener('click', ()=>{ scores=Object.fromEntries(SUBJECTS.map(s=>[s.id,0])); step=0; rounds=makeRounds(); showPage('page-game'); renderStep(); });
+$('#printBtn2').addEventListener('click', ()=>window.print());
+$('#downloadBtn').addEventListener('click', ()=>{
+  const payload = { total: TOTAL_ROUNDS, scores, ranking: SUBJECTS.map(s=>({subject:s.id, score:scores[s.id]})).sort((a,b)=>b.score-a.score), student, timestamp: new Date().toISOString() };
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=`흥미결과_${new Date().toISOString().slice(0,10)}.json`; a.click(); URL.revokeObjectURL(url);
+});
+
+/* ==== 초기화 ==== */
 document.getElementById('roundTotal').textContent = TOTAL_ROUNDS;
 document.getElementById('stepMax').textContent   = TOTAL_ROUNDS;
 loadStudent();
