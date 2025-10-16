@@ -1,0 +1,293 @@
+import React, { useMemo, useState, useEffect } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Trophy, Shuffle, RotateCcw, Download } from "lucide-react";
+
+// ✅ 설정값
+const TOTAL_ROUNDS = 30; // 문항 수
+
+// ✅ 교과 데이터 (첨부 문서 기반 활동 예시를 요약 반영)
+const SUBJECTS = [
+  {
+    id: "외식서비스",
+    emoji: "🍝",
+    color: "from-orange-200 to-rose-200",
+    activities: [
+      "손님 맞이 인사하기",
+      "음식 주문받기",
+      "테이블 세팅하기",
+      "음식 서빙하기",
+      "주방기기 사용하기",
+      "식재료 손질·계량·조리",
+      "음료/디저트 제조"
+    ],
+  },
+  {
+    id: "대인서비스",
+    emoji: "🤝",
+    color: "from-sky-200 to-green-200",
+    activities: [
+      "인사 예절·감정 표현",
+      "고객 상담하기",
+      "보행·식사 돕기",
+      "세차·세탁·청소 보조",
+      "손톱관리·미용 보조"
+    ],
+  },
+  {
+    id: "기초작업기술1",
+    emoji: "🔧",
+    color: "from-amber-200 to-lime-200",
+    activities: [
+      "기준에 따라 분류하기",
+      "줄자·계량컵·저울 사용",
+      "공구 조립(드라이버·망치)",
+      "나사 조이기",
+      "전동드라이버 기초"
+    ],
+  },
+  {
+    id: "기초작업기술2",
+    emoji: "📦",
+    color: "from-violet-200 to-fuchsia-200",
+    activities: [
+      "포장·운반·분류·배달",
+      "세탁·청소",
+      "생활·식품 제조(드립백 등)",
+      "사무기기(복사·코팅·제본·세단)",
+      "사서보조(바코드·정리·대출)"
+    ],
+  },
+  {
+    id: "농생명",
+    emoji: "🌿",
+    color: "from-emerald-200 to-teal-200",
+    activities: [
+      "화분·모종 심기",
+      "물주기·작물 재배",
+      "농축산 가공 체험",
+      "반려동물 관리",
+      "학교 텃밭·실내정원 가꾸기"
+    ],
+  },
+  {
+    id: "정보처리",
+    emoji: "💻",
+    color: "from-cyan-200 to-indigo-200",
+    activities: [
+      "타자·문서·프레젠테이션",
+      "그림·동영상 만들기",
+      "인터넷 구매·검색·협업",
+      "AI·무인단말·디지털금융",
+      "드론·코딩로봇 체험"
+    ],
+  },
+  {
+    id: "사무지원",
+    emoji: "🗂️",
+    color: "from-slate-200 to-stone-200",
+    activities: [
+      "복합기 사용·문서 관리",
+      "책상·탕비실 정돈",
+      "우편물 포장·전달",
+      "도서 분류·정리",
+      "민원 응대 보조"
+    ],
+  },
+];
+
+// 라운드 구성: 서로 다른 두 교과를 무작위로 뽑아 30문항 생성
+function makeRounds(total = TOTAL_ROUNDS) {
+  const rounds = [];
+  for (let i = 0; i < total; i++) {
+    let a = SUBJECTS[Math.floor(Math.random() * SUBJECTS.length)];
+    let b = SUBJECTS[Math.floor(Math.random() * SUBJECTS.length)];
+    while (b.id === a.id) {
+      b = SUBJECTS[Math.floor(Math.random() * SUBJECTS.length)];
+    }
+    // 각 라운드마다 해당 교과의 활동을 하나씩 랜덤 샘플로 보여줌
+    const aAct = a.activities[Math.floor(Math.random() * a.activities.length)];
+    const bAct = b.activities[Math.floor(Math.random() * b.activities.length)];
+    rounds.push({ a: { ...a, highlight: aAct }, b: { ...b, highlight: bAct } });
+  }
+  return rounds;
+}
+
+function GradientIllustration({ emoji, color }) {
+  return (
+    <div className={`w-full aspect-[4/3] rounded-2xl bg-gradient-to-br ${color} flex items-center justify-center text-7xl md:text-8xl`}>
+      <span className="drop-shadow-sm" aria-hidden>
+        {emoji}
+      </span>
+    </div>
+  );
+}
+
+function ChoiceCard({ subject, onChoose }) {
+  return (
+    <Card className="group cursor-pointer select-none transition hover:-translate-y-0.5 hover:shadow-lg">
+      <CardContent className="p-4 md:p-6">
+        <GradientIllustration emoji={subject.emoji} color={subject.color} />
+        <div className="pt-3 md:pt-4">
+          {/* 활동 문구만 표시 (과목명 비표시) */}
+          <div className="text-base md:text-lg font-semibold leading-snug">
+            {subject.highlight}
+          </div>
+          <Button className="w-full mt-3" onClick={onChoose}>
+            이쪽이 더 끌려요
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function ResultBadge({ rank, subject, score }) {
+  const medal = rank === 1 ? "🥇" : rank === 2 ? "🥈" : rank === 3 ? "🥉" : "";
+  return (
+    <div className="p-4 rounded-2xl bg-white/70 border shadow-sm">
+      <div className="text-lg font-bold flex items-center gap-2">
+        <span>{medal}</span>
+        <span>{rank}위 · {subject.id}</span>
+        <span className="text-xs text-muted-foreground">({score}점)</span>
+      </div>
+      <ul className="list-disc pl-5 text-sm mt-2 space-y-1">
+        {subject.activities.slice(0, 4).map((a, i) => (
+          <li key={i}>{a}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export default function App() {
+  const [rounds, setRounds] = useState(() => makeRounds());
+  const [step, setStep] = useState(0); // 0..TOTAL_ROUNDS
+  const [scores, setScores] = useState(() => Object.fromEntries(SUBJECTS.map(s => [s.id, 0])));
+  const [done, setDone] = useState(false);
+
+  const progress = Math.round((step / TOTAL_ROUNDS) * 100);
+  const current = rounds[step];
+
+  function choose(subjectId) {
+    setScores(prev => ({ ...prev, [subjectId]: prev[subjectId] + 1 }));
+    if (step + 1 >= TOTAL_ROUNDS) {
+      setDone(true);
+    } else {
+      setStep(step + 1);
+    }
+  }
+
+  function restart(shuffle = false) {
+    setScores(Object.fromEntries(SUBJECTS.map(s => [s.id, 0])));
+    setStep(0);
+    setDone(false);
+    setRounds(shuffle ? makeRounds() : rounds.map(r => ({ ...r })));
+  }
+
+  const ranking = useMemo(() => {
+    const arr = SUBJECTS.map(s => ({ subject: s, score: scores[s.id] }))
+      .sort((a, b) => b.score - a.score);
+    return arr;
+  }, [scores]);
+
+  function downloadJSON() {
+    const result = {
+      total: TOTAL_ROUNDS,
+      scores,
+      ranking: ranking.map(r => ({ subject: r.subject.id, score: r.score })),
+      timestamp: new Date().toISOString(),
+    };
+    const blob = new Blob([JSON.stringify(result, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `흥미결과_${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  useEffect(() => {
+    // 모바일에서 주소창 높이 변동 대응 (미세한 여백 보정)
+    document.documentElement.style.setProperty("--vh", `${window.innerHeight * 0.01}px`);
+    const onResize = () => document.documentElement.style.setProperty("--vh", `${window.innerHeight * 0.01}px`);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  return (
+    <div className="min-h-[calc(var(--vh,1vh)*100)] bg-gradient-to-b from-white to-slate-50">
+      <div className="max-w-5xl mx-auto p-4 md:p-6">
+        <header className="flex items-center justify-between gap-2">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">교과 흥미 이상형월드컵</h1>
+            <p className="text-sm text-muted-foreground mt-1">이미지(이모지) 일러스트 기반 · 총 {TOTAL_ROUNDS}문항</p>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => restart(false)} title="처음부터 다시">
+              <RotateCcw className="w-4 h-4 mr-2" />리셋
+            </Button>
+            <Button variant="secondary" onClick={() => restart(true)} title="새로운 랜덤 구성">
+              <Shuffle className="w-4 h-4 mr-2" />재구성
+            </Button>
+          </div>
+        </header>
+
+        {!done ? (
+          <>
+            <div className="mt-4">
+              <Progress value={progress} />
+              <div className="text-xs text-muted-foreground mt-1">진행도: {step}/{TOTAL_ROUNDS}</div>
+            </div>
+
+            {current && (
+              <div className="grid md:grid-cols-2 gap-4 md:gap-6 mt-4 md:mt-6">
+                <ChoiceCard subject={current.a} onChoose={() => choose(current.a.id)} />
+                <ChoiceCard subject={current.b} onChoose={() => choose(current.b.id)} />
+              </div>
+            )}
+
+            <div className="mt-3 text-sm text-muted-foreground">
+              아래의 두 가지 중, 더 흥미로운 쪽을 선택하세요. 선택은 곧바로 저장됩니다.
+            </div>
+          </>
+        ) : (
+          <section className="mt-6">
+            <div className="flex items-center gap-2 mb-2">
+              <Trophy className="w-5 h-5" />
+              <h2 className="text-xl font-bold">결과</h2>
+            </div>
+            <p className="text-sm text-muted-foreground">총 {TOTAL_ROUNDS}문항 중 선택 결과를 바탕으로 한 선호 교과 순위입니다.</p>
+
+            <div className="grid md:grid-cols-3 gap-4 mt-4">
+              {ranking.map((r, idx) => (
+                <ResultBadge key={r.subject.id} rank={idx + 1} subject={r.subject} score={r.score} />
+              ))}
+            </div>
+
+            <div className="mt-6 flex gap-2">
+              <Button onClick={() => restart(false)}>
+                다시 진행
+              </Button>
+              <Button variant="secondary" onClick={() => restart(true)}>
+                새로 섞어서 진행
+              </Button>
+              <Button variant="outline" onClick={downloadJSON}>
+                <Download className="w-4 h-4 mr-2" />결과 JSON 저장
+              </Button>
+            </div>
+
+            <div className="mt-6 text-xs text-muted-foreground">
+              ※ 활동 예시는 업로드 문서의 7개 교과 항목을 바탕으로 요약했습니다. 이미지는 저작권 이슈가 없는 이모지 일러스트 스타일로 단순화하여 사용했습니다.
+            </div>
+          </section>
+        )}
+
+        <footer className="mt-10 text-xs text-muted-foreground text-center">
+          © {new Date().getFullYear()} 교과 흥미 이상형월드컵 · 교육용 샘플
+        </footer>
+      </div>
+    </div>
+  );
+}
