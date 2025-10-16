@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>선택과목 고르기 – SVG 일러스트(확실히 뜨는 버전)</title>
+<title>선택과목 고르기 – SVG 일러스트(렌더 고정판)</title>
 <style>
   :root { --bg:#f7f8fb; --card:#ffffff; --muted:#667085; --accent:#0f172a; --primary:#2563eb; }
   * { box-sizing: border-box; }
@@ -51,14 +51,7 @@
   .form input { width: 100%; padding: 12px; border:1px solid #d1d5db; border-radius: 10px; }
   .note { font-size: 13px; color: var(--muted); margin-top: 10px; }
   .hidden { display:none !important; }
-
-  @media print {
-    .no-print { display: none !important; }
-    .badge { break-inside: avoid; page-break-inside: avoid; }
-    footer { display:none; }
-    body { background: white; }
-    .container { max-width: 900px; }
-  }
+  @media print { .no-print { display: none !important; } .badge { break-inside: avoid; page-break-inside: avoid; } footer { display:none; } body { background: white; } .container { max-width: 900px; } }
 </style>
 </head>
 <body>
@@ -138,36 +131,21 @@
       <div class="muted small" style="margin-top:10px;">※ SVG 일러스트는 내장되어 폰트나 네트워크 상태와 무관하게 표시됩니다.</div>
     </section>
 
-    <footer class="no-print">© <span id="year"></span> 선택과목 고르기 · SVG 확정판</footer>
+    <footer class="no-print">© <span id="year"></span> 선택과목 고르기 · SVG 렌더 고정판</footer>
   </div>
 
 <script>
   const SUBJECTS = [
-    { id:"외식서비스", key:"food", colorFrom:"#ffedd5", colorTo:"#ffe4e6", activities:[
-      "손님 맞이 인사하기","음식 주문받기","테이블 세팅하기","음식 서빙하기","주방기기 사용하기","식재료 손질·계량·조리","음료·디저트 제조"
-    ]},
-    { id:"대인서비스", key:"care", colorFrom:"#dbeafe", colorTo:"#dcfce7", activities:[
-      "인사 예절·감정 표현","고객 상담하기","보행·식사 돕기","세차·세탁·청소 보조","손톱관리·미용 보조"
-    ]},
-    { id:"기초작업기술1", key:"tools", colorFrom:"#fef3c7", colorTo:"#ecfccb", activities:[
-      "기준에 따라 분류하기","줄자·계량컵·저울 사용","공구 조립(드라이버·망치)","나사 조이기","전동드라이버 기초"
-    ]},
-    { id:"기초작업기술2", key:"box", colorFrom:"#ede9fe", colorTo:"#f5d0fe", activities:[
-      "포장·운반·분류·배달","세탁·청소","생활·식품 제조(드립백 등)","사무기기(복사·코팅·제본·세단)","사서보조(바코드·정리·대출)"
-    ]},
-    { id:"농생명", key:"leaf", colorFrom:"#d1fae5", colorTo:"#a5f3fc", activities:[
-      "화분·모종 심기","물주기·작물 재배","농축산 가공 체험","반려동물 관리","학교 텃밭·실내정원 가꾸기"
-    ]},
-    { id:"정보처리", key:"laptop", colorFrom:"#bae6fd", colorTo:"#c7d2fe", activities:[
-      "타자·문서·프레젠테이션","그림·동영상 만들기","인터넷 구매·검색·협업","AI·무인단말·디지털금융","드론·코딩로봇 체험"
-    ]},
-    { id:"사무지원", key:"files", colorFrom:"#e5e7eb", colorTo:"#e7e5e4", activities:[
-      "복합기 사용·문서 관리","책상·탕비실 정돈","우편물 포장·전달","도서 분류·정리","민원 응대 보조"
-    ]},
+    { id:"외식서비스", key:"food", colorFrom:"#ffedd5", colorTo:"#ffe4e6", activities:["손님 맞이 인사하기","음식 주문받기","테이블 세팅하기","음식 서빙하기","주방기기 사용하기","식재료 손질·계량·조리","음료·디저트 제조"]},
+    { id:"대인서비스", key:"care", colorFrom:"#dbeafe", colorTo:"#dcfce7", activities:["인사 예절·감정 표현","고객 상담하기","보행·식사 돕기","세차·세탁·청소 보조","손톱관리·미용 보조"]},
+    { id:"기초작업기술1", key:"tools", colorFrom:"#fef3c7", colorTo:"#ecfccb", activities:["기준에 따라 분류하기","줄자·계량컵·저울 사용","공구 조립(드라이버·망치)","나사 조이기","전동드라이버 기초"]},
+    { id:"기초작업기술2", key:"box", colorFrom:"#ede9fe", colorTo:"#f5d0fe", activities:["포장·운반·분류·배달","세탁·청소","생활·식품 제조(드립백 등)","사무기기(복사·코팅·제본·세단)","사서보조(바코드·정리·대출)"]},
+    { id:"농생명", key:"leaf", colorFrom:"#d1fae5", colorTo:"#a5f3fc", activities:["화분·모종 심기","물주기·작물 재배","농축산 가공 체험","반려동물 관리","학교 텃밭·실내정원 가꾸기"]},
+    { id:"정보처리", key:"laptop", colorFrom:"#bae6fd", colorTo:"#c7d2fe", activities:["타자·문서·프레젠테이션","그림·동영상 만들기","인터넷 구매·검색·협업","AI·무인단말·디지털금융","드론·코딩로봇 체험"]},
+    { id:"사무지원", key:"files", colorFrom:"#e5e7eb", colorTo:"#e7e5e4", activities:["복합기 사용·문서 관리","책상·탕비실 정돈","우편물 포장·전달","도서 분류·정리","민원 응대 보조"]},
   ];
 
   const TOTAL_ROUNDS = 30;
-
   let rounds = [];
   let step = 0;
   let scores = Object.fromEntries(SUBJECTS.map(s => [s.id, 0]));
@@ -177,8 +155,8 @@
   function randPick(arr) { return arr[Math.floor(Math.random()*arr.length)]; }
   function makeGradient(from, to) { return `linear-gradient(135deg, ${from}, ${to})`; }
   function showPage(id) { ["page-start","page-info","page-game","page-result"].forEach(x => document.getElementById(x).classList.add("hidden")); document.getElementById(id).classList.remove("hidden"); }
-  function saveStudentFromForm() { student.school=$('#school').value.trim(); student.grade=$('#grade').value.trim(); student.name=$('#name').value.trim(); localStorage.setItem("worldcup_student_svg_fixed", JSON.stringify(student)); }
-  function loadStudent() { try{ const s=JSON.parse(localStorage.getItem("worldcup_student_svg_fixed")||"{}"); student=Object.assign({school:"",grade:"",name:""}, s); $('#school').value=student.school; $('#grade').value=student.grade; $('#name').value=student.name; }catch(e){} }
+  function saveStudentFromForm() { student.school=$('#school').value.trim(); student.grade=$('#grade').value.trim(); student.name=$('#name').value.trim(); localStorage.setItem("worldcup_student_svg_fixed2", JSON.stringify(student)); }
+  function loadStudent() { try{ const s=JSON.parse(localStorage.getItem("worldcup_student_svg_fixed2")||"{}"); student=Object.assign({school:"",grade:"",name:""}, s); $('#school').value=student.school; $('#grade').value=student.grade; $('#name').value=student.name; }catch(e){} }
   function updateStudentMeta() { const text=[student.school,student.grade,student.name].filter(Boolean).join(" · "); $('#studentMeta').textContent = text ? `학생정보: ${text}` : "학생정보: (미입력)"; }
 
   function makeRounds(total = TOTAL_ROUNDS) {
@@ -195,68 +173,39 @@
   }
 
   function iconSVG(key) {
-    // explicit width/height + viewBox to satisfy Chrome/Edge
     switch(key){
-      case "food": return `<svg width="256" height="256" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
-        <defs><linearGradient id="g1" x1="0" x2="1"><stop offset="0%" stop-color="#f97316"/><stop offset="100%" stop-color="#ef4444"/></linearGradient></defs>
-        <ellipse cx="50" cy="70" rx="32" ry="10" fill="#fff" stroke="#0f172a" stroke-width="2"/>
-        <path d="M18 70h64" stroke="#0f172a" stroke-width="3"/>
-        <path d="M30 68c0-10 40-10 40 0" fill="url(#g1)" stroke="#0f172a" stroke-width="2"/>
-        <circle cx="30" cy="45" r="10" fill="#fde68a" stroke="#0f172a" stroke-width="2"/>
-        <ellipse cx="66" cy="48" rx="14" ry="11" fill="#fca5a5" stroke="#0f172a" stroke-width="2"/>
-      </svg>`;
-      case "care": return `<svg width="256" height="256" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
-        <path d="M20 45c0-8 6-14 14-14 6 0 10 3 16 10 6-7 10-10 16-10 8 0 14 6 14 14 0 16-30 28-30 28S20 61 20 45z" fill="#93c5fd" stroke="#0f172a" stroke-width="2"/>
-      </svg>`;
-      case "tools": return `<svg width="256" height="256" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
-        <path d="M20 70l20-20 10 10-20 20z" fill="#fde68a" stroke="#0f172a" stroke-width="2"/>
-        <path d="M52 28l20 20-8 8-20-20z" fill="#fff" stroke="#0f172a" stroke-width="2"/>
-        <circle cx="65" cy="35" r="6" fill="#fff" stroke="#0f172a" stroke-width="2"/>
-      </svg>`;
-      case "box": return `<svg width="256" height="256" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
-        <path d="M20 40l30-12 30 12-30 12-30-12z" fill="#ddd6fe" stroke="#0f172a" stroke-width="2"/>
-        <path d="M20 40v30l30 12V52L20 40z" fill="#e9d5ff" stroke="#0f172a" stroke-width="2"/>
-        <path d="M50 52l30-12v30L50 82V52z" fill="#f5d0fe" stroke="#0f172a" stroke-width="2"/>
-      </svg>`;
-      case "leaf": return `<svg width="256" height="256" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
-        <path d="M50 80c18-10 28-26 28-40-10-2-22 0-28 8-6-8-18-10-28-8 0 14 10 30 28 40z" fill="#86efac" stroke="#0f172a" stroke-width="2"/>
-        <path d="M50 48v32" stroke="#0f172a" stroke-width="2" />
-      </svg>`;
-      case "laptop": return `<svg width="256" height="256" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
-        <rect x="22" y="28" width="56" height="34" rx="4" fill="#c7d2fe" stroke="#0f172a" stroke-width="2"/>
-        <rect x="16" y="64" width="68" height="10" rx="2" fill="#93c5fd" stroke="#0f172a" stroke-width="2"/>
-        <path d="M22 58h56" stroke="#0f172a" stroke-width="2"/>
-      </svg>`;
-      case "files": return `<svg width="256" height="256" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
-        <rect x="26" y="18" width="40" height="54" rx="4" fill="#e5e7eb" stroke="#0f172a" stroke-width="2"/>
-        <rect x="36" y="28" width="40" height="54" rx="4" fill="#f3f4f6" stroke="#0f172a" stroke-width="2"/>
-        <path d="M40 40h24M40 48h24M40 56h20" stroke="#0f172a" stroke-width="2"/>
-      </svg>`;
-      default: return `<svg width="256" height="256" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="#fff"/></svg>`;
+      case "food": return `<svg width="256" height="256" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><ellipse cx="50" cy="70" rx="32" ry="10" fill="#fff" stroke="#0f172a" stroke-width="2"/><path d="M18 70h64" stroke="#0f172a" stroke-width="3"/><path d="M30 68c0-10 40-10 40 0" fill="#fb923c" stroke="#0f172a" stroke-width="2"/><circle cx="30" cy="45" r="10" fill="#fde68a" stroke="#0f172a" stroke-width="2"/><ellipse cx="66" cy="48" rx="14" ry="11" fill="#fca5a5" stroke="#0f172a" stroke-width="2"/></svg>`;
+      case "care": return `<svg width="256" height="256" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M20 45c0-8 6-14 14-14 6 0 10 3 16 10 6-7 10-10 16-10 8 0 14 6 14 14 0 16-30 28-30 28S20 61 20 45z" fill="#93c5fd" stroke="#0f172a" stroke-width="2"/></svg>`;
+      case "tools": return `<svg width="256" height="256" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M20 70l20-20 10 10-20 20z" fill="#fde68a" stroke="#0f172a" stroke-width="2"/><path d="M52 28l20 20-8 8-20-20z" fill="#fff" stroke="#0f172a" stroke-width="2"/><circle cx="65" cy="35" r="6" fill="#fff" stroke="#0f172a" stroke-width="2"/></svg>`;
+      case "box": return `<svg width="256" height="256" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M20 40l30-12 30 12-30 12-30-12z" fill="#ddd6fe" stroke="#0f172a" stroke-width="2"/><path d="M20 40v30l30 12V52L20 40z" fill="#e9d5ff" stroke="#0f172a" stroke-width="2"/><path d="M50 52l30-12v30L50 82V52z" fill="#f5d0fe" stroke="#0f172a" stroke-width="2"/></svg>`;
+      case "leaf": return `<svg width="256" height="256" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 80c18-10 28-26 28-40-10-2-22 0-28 8-6-8-18-10-28-8 0 14 10 30 28 40z" fill="#86efac" stroke="#0f172a" stroke-width="2"/><path d="M50 48v32" stroke="#0f172a" stroke-width="2"/></svg>`;
+      case "laptop": return `<svg width="256" height="256" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect x="22" y="28" width="56" height="34" rx="4" fill="#c7d2fe" stroke="#0f172a" stroke-width="2"/><rect x="16" y="64" width="68" height="10" rx="2" fill="#93c5fd" stroke="#0f172a" stroke-width="2"/><path d="M22 58h56" stroke="#0f172a" stroke-width="2"/></svg>`;
+      case "files": return `<svg width="256" height="256" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect x="26" y="18" width="40" height="54" rx="4" fill="#e5e7eb" stroke="#0f172a" stroke-width="2"/><rect x="36" y="28" width="40" height="54" rx="4" fill="#f3f4f6" stroke="#0f172a" stroke-width="2"/><path d="M40 40h24M40 48h24M40 56h20" stroke="#0f172a" stroke-width="2"/></svg>`;
+      default: return `<svg width="256" height="256" xmlns="http://www.w3.org/2000/svg"><rect width="256" height="256" fill="#fff"/></svg>`;
     }
   }
 
   function renderChoiceCard(data) {
     const wrap = document.createElement('div');
     wrap.className = 'card';
-    wrap.innerHTML = `
-      <div class="card-body">
+    wrap.innerHTML = `<div class="card-body">
         <div class="illus" style="background:${makeGradient(data.colorFrom, data.colorTo)}">
           <div class="svgwrap">${iconSVG(data.key)}</div>
         </div>
         <div class="title">${data.highlight}</div>
         <button class="btn">이쪽이 더 끌려요</button>
-      </div>
-    `;
+      </div>`;
     wrap.querySelector('.btn').addEventListener('click', () => choose(data.id));
     wrap.querySelector('.illus').addEventListener('click', () => choose(data.id));
     return wrap;
   }
 
   function renderStep() {
+    // 안전장치: rounds가 비어 있으면 생성
+    if (!rounds || rounds.length === 0) { rounds = makeRounds(); }
+    const current = rounds[step];
     $('#stepNow').textContent = step;
     $('#progress').value = step;
-    const current = rounds[step];
     const choices = $('#choices');
     choices.innerHTML = '';
     if (current) {
@@ -267,12 +216,8 @@
 
   function choose(subjectId) {
     scores[subjectId] = (scores[subjectId] || 0) + 1;
-    if (step + 1 >= TOTAL_ROUNDS) {
-      finish();
-    } else {
-      step += 1;
-      renderStep();
-    }
+    if (step + 1 >= TOTAL_ROUNDS) { finish(); }
+    else { step += 1; renderStep(); }
   }
 
   function finish() {
@@ -284,12 +229,8 @@
       const item = document.createElement('div');
       const medal = idx===0 ? "🥇" : idx===1 ? "🥈" : idx===2 ? "🥉" : "";
       item.className = 'badge';
-      item.innerHTML = `
-        <h4><span class="rank">${idx+1}위</span> ${medal} ${r.subject.id} <span class="muted">(${r.score}점)</span></h4>
-        <ul style="margin:0; padding-left:18px; font-size: 13px;">
-          ${r.subject.activities.slice(0,4).map(a=>`<li>${a}</li>`).join('')}
-        </ul>
-      `;
+      item.innerHTML = `<h4><span class="rank">${idx+1}위</span> ${medal} ${r.subject.id} <span class="muted">(${r.score}점)</span></h4>
+        <ul style="margin:0; padding-left:18px; font-size: 13px;">${r.subject.activities.slice(0,4).map(a=>`<li>${a}</li>`).join('')}</ul>`;
       grid.appendChild(item);
     });
     window.scrollTo(0,0);
@@ -299,9 +240,11 @@
     scores = Object.fromEntries(SUBJECTS.map(s => [s.id, 0]));
     step = 0;
     if (shuffle) rounds = makeRounds();
-    showPage('page-game');
-    renderStep();
+    goGame();
   }
+
+  // ✅ 핵심 수정: 게임 페이지로 이동할 때 항상 renderStep 실행
+  function goGame() { showPage('page-game'); renderStep(); }
 
   function downloadJSON() {
     const ranking = SUBJECTS.map(s => ({ subject:s.id, score: scores[s.id] })).sort((a,b)=>b.score-a.score);
@@ -310,17 +253,16 @@
     const url = URL.createObjectURL(blob); const a = document.createElement('a');
     a.href = url; a.download = `흥미결과_${new Date().toISOString().slice(0,10)}.json`; a.click(); URL.revokeObjectURL(url);
   }
-
   function printPDF() { updateStudentMeta(); window.print(); }
 
   // 네비게이션
   $('#navStart').addEventListener('click', () => showPage('page-start'));
   $('#navInfo').addEventListener('click', () => showPage('page-info'));
-  $('#navGame').addEventListener('click', () => showPage('page-game'));
+  $('#navGame').addEventListener('click', goGame);
   $('#printBtn').addEventListener('click', printPDF);
   $('#startToInfo').addEventListener('click', () => showPage('page-info'));
-  $('#startToGame').addEventListener('click', () => { showPage('page-game'); });
-  $('#infoToGame').addEventListener('click', () => { saveStudentFromForm(); showPage('page-game'); });
+  $('#startToGame').addEventListener('click', goGame);
+  $('#infoToGame').addEventListener('click', () => { saveStudentFromForm(); goGame(); });
   $('#infoClear').addEventListener('click', () => { $('#school').value=''; $('#grade').value=''; $('#name').value=''; saveStudentFromForm(); });
   $('#againBtn').addEventListener('click', () => restart(false));
   $('#reshuffleBtn').addEventListener('click', () => { rounds = makeRounds(); restart(false); });
@@ -333,7 +275,7 @@
   document.getElementById('roundTotal').textContent = TOTAL_ROUNDS;
   loadStudent();
   rounds = makeRounds();
-  showPage('page-start');
+  showPage('page-start'); // 시작은 랜딩
 </script>
 </body>
 </html>
