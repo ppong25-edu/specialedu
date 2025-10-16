@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>선택과목 고르기 – SVG 일러스트(렌더 고정판)</title>
+<title>선택과목 고르기 – 내 이미지 버전 (업데이트)</title>
 <style>
   :root { --bg:#f7f8fb; --card:#ffffff; --muted:#667085; --accent:#0f172a; --primary:#2563eb; }
   * { box-sizing: border-box; }
@@ -17,46 +17,24 @@
   @media (min-width: 760px) { .row { grid-template-columns: 1fr 1fr; } }
   .card { background: var(--card); border:1px solid #e5e7eb; border-radius: 16px; box-shadow: 0 6px 16px rgba(0,0,0,0.06); overflow:hidden; transition: transform .12s ease, box-shadow .12s ease; }
   .card:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(0,0,0,0.12); }
-  .card-body { padding: 14px; }
-  .illus { position: relative; width: 100%; padding-top: 66%; border-radius: 14px; overflow: hidden; display:flex; align-items:center; justify-content:center; cursor: pointer; }
-  .illus .svgwrap { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
-  .illus svg { width: 70%; height: 70%; filter: drop-shadow(0 6px 10px rgba(0,0,0,0.12)); }
+  .card-body { padding: 14px; text-align:center; }
+  .illus { position: relative; width: 100%; padding-top: 66%; border-radius: 14px; overflow: hidden; display:flex; align-items:center; justify-content:center; cursor: pointer; background: #f3f4f6; }
+  .illus img { position:absolute; width: 80%; height: 80%; object-fit: contain; border-radius: 12px; }
   .title { font-weight: 700; font-size: 16px; margin-top: 10px; line-height:1.35; }
-  .btn { width: 100%; margin-top:10px; padding: 12px 14px; border-radius: 12px; border:1px solid #d1d5db; background:#fff; cursor:pointer; font-weight:600; }
-  .btn:hover { background:#f3f4f6; }
-  .btn.primary { background: var(--primary); border-color: var(--primary); color:white; }
-  .btn.secondary { background: #eef2ff; border-color:#e5e7eb; color:#1f2937; }
+  .btn { display:none; }
   .toolbar { display:flex; gap:8px; flex-wrap: wrap; }
-  .toolbar .btn { width:auto; }
+  .toolbar .btn { width:auto; display:block; }
   .progress-wrap { margin-top: 10px; }
   progress { width:100%; height: 14px; appearance: none; }
   progress::-webkit-progress-bar { background:#eef2ff; border-radius: 12px; }
   progress::-webkit-progress-value { background: linear-gradient(90deg, #60a5fa, #2563eb); border-radius: 12px; }
-  .grid-3 { display:grid; grid-template-columns: 1fr; gap:12px; }
-  @media (min-width: 840px) { .grid-3 { grid-template-columns: repeat(3, 1fr); } }
-  .badge { background: #ffffffb3; border:1px solid #e5e7eb; border-radius: 14px; padding: 12px; }
-  .badge h4 { margin:0 0 6px; font-size:14px; }
-  .rank { font-weight:800; margin-right: 6px; }
   footer { text-align:center; margin: 24px 0 8px; font-size: 12px; color: var(--muted); }
-  .small { font-size: 12px; }
-  .hero { padding: 36px 18px; text-align: center; }
-  .hero h1 { font-size: clamp(26px, 4vw, 42px); }
-  .hero p { margin: 10px auto 0; max-width: 680px; font-size: 16px; color: var(--muted); }
-  .hero .cta { margin-top: 16px; display: inline-flex; gap:10px; }
-  .hero .cta .btn { width:auto; padding: 12px 18px; }
-  .form { background: var(--card); border:1px solid #e5e7eb; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.04); padding: 18px; }
-  .form .row2 { display:grid; grid-template-columns: 1fr; gap: 12px; }
-  @media (min-width: 760px) { .form .row2 { grid-template-columns: 1fr 1fr 1fr; } }
-  .form label { font-weight: 700; font-size: 14px; display:block; margin-bottom: 6px; }
-  .form input { width: 100%; padding: 12px; border:1px solid #d1d5db; border-radius: 10px; }
-  .note { font-size: 13px; color: var(--muted); margin-top: 10px; }
+  .guide { text-align:center; font-size:20px; font-weight:700; margin-top:20px; margin-bottom:10px; }
   .hidden { display:none !important; }
-  @media print { .no-print { display: none !important; } .badge { break-inside: avoid; page-break-inside: avoid; } footer { display:none; } body { background: white; } .container { max-width: 900px; } }
 </style>
 </head>
 <body>
   <div class="container">
-
     <header class="no-print">
       <div>
         <h1>선택과목 고르기</h1>
@@ -64,218 +42,18 @@
       </div>
       <div class="toolbar">
         <button class="btn" id="navStart">처음으로</button>
-        <button class="btn secondary" id="navInfo">정보입력</button>
-        <button class="btn primary" id="navGame">진행화면</button>
-        <button class="btn" id="printBtn" title="PDF로 저장하려면 인쇄에서 'PDF로 저장'을 선택하세요.">결과 인쇄/PDF</button>
+        <button class="btn" id="navInfo">정보입력</button>
+        <button class="btn" id="navGame">진행화면</button>
+        <button class="btn" id="printBtn">결과 인쇄/PDF</button>
       </div>
     </header>
 
-    <section id="page-start" class="hero">
-      <h1>선택과목 고르기</h1>
-      <p>두 가지 활동 중 더 끌리는 것을 고르며, 나에게 맞는 교과(선택과목) 흥미를 알아봅니다. 총 <b><span id="roundTotal">30</span>문항</b>입니다.</p>
-      <div class="hero cta">
-        <button class="btn primary" id="startToInfo">시작하기</button>
-        <button class="btn" id="startToGame">바로 진행</button>
-      </div>
-      <div class="note">※ 수업·연구용으로 자유롭게 활용 가능합니다.</div>
-    </section>
-
-    <section id="page-info" class="hidden">
-      <h2>학생 정보 입력</h2>
-      <div class="form">
-        <div class="row2">
-          <div>
-            <label for="school">학교명</label>
-            <input type="text" id="school" placeholder="예) ○○특수학교" />
-          </div>
-          <div>
-            <label for="grade">학년</label>
-            <input type="text" id="grade" placeholder="예) 1학년 / 고1" />
-          </div>
-          <div>
-            <label for="name">성명</label>
-            <input type="text" id="name" placeholder="예) 홍길동" />
-          </div>
-        </div>
-        <div class="note">입력한 정보는 결과 화면과 인쇄(PDF)에 함께 표시됩니다.</div>
-        <div style="margin-top: 12px; display:flex; gap:8px; flex-wrap: wrap;">
-          <button class="btn primary" id="infoToGame">진행 시작</button>
-          <button class="btn" id="infoClear">입력 지우기</button>
-        </div>
-      </div>
-    </section>
-
-    <section id="page-game" class="hidden">
+    <section id="page-game">
       <div class="progress-wrap">
         <progress id="progress" value="0" max="30"></progress>
-        <div class="muted">진행도: <span id="stepNow">0</span>/<span id="stepMax">30</span></div>
       </div>
-      <div class="row" id="choices" style="margin-top:12px;"></div>
-      <div class="muted small">아래의 두 가지 중, 더 흥미로운 활동을 선택하세요. 그림을 눌러도 선택됩니다.</div>
-      <div class="note no-print" style="margin-top:10px;">※ 상단 “정보입력” 버튼에서 학교/학년/성명을 입력할 수 있습니다.</div>
+      <div class="guide">아래의 두 가지 중, 더 흥미로운 활동을 선택해주세요.</div>
+      <div class="row" id="choices"></div>
     </section>
 
-    <section id="page-result" class="hidden" style="margin-top: 18px;">
-      <div id="resultHeader">
-        <h2>결과</h2>
-        <div class="muted small">선택 결과를 바탕으로 한 선호 교과 순위입니다.</div>
-        <div id="studentMeta" class="muted small" style="margin-top:6px;"></div>
-      </div>
-      <div class="grid-3" id="rankGrid" style="margin-top:12px;"></div>
-      <div class="no-print" style="margin-top:12px; display:flex; gap:8px; flex-wrap: wrap;">
-        <button class="btn primary" id="againBtn">다시 진행</button>
-        <button class="btn" id="reshuffleBtn">새로 섞어서 진행</button>
-        <button class="btn" id="downloadBtn">결과 JSON 저장</button>
-        <button class="btn" id="printBtn2">인쇄/PDF</button>
-      </div>
-      <div class="muted small" style="margin-top:10px;">※ SVG 일러스트는 내장되어 폰트나 네트워크 상태와 무관하게 표시됩니다.</div>
-    </section>
-
-    <footer class="no-print">© <span id="year"></span> 선택과목 고르기 · SVG 렌더 고정판</footer>
-  </div>
-
-<script>
-  const SUBJECTS = [
-    { id:"외식서비스", key:"food", colorFrom:"#ffedd5", colorTo:"#ffe4e6", activities:["손님 맞이 인사하기","음식 주문받기","테이블 세팅하기","음식 서빙하기","주방기기 사용하기","식재료 손질·계량·조리","음료·디저트 제조"]},
-    { id:"대인서비스", key:"care", colorFrom:"#dbeafe", colorTo:"#dcfce7", activities:["인사 예절·감정 표현","고객 상담하기","보행·식사 돕기","세차·세탁·청소 보조","손톱관리·미용 보조"]},
-    { id:"기초작업기술1", key:"tools", colorFrom:"#fef3c7", colorTo:"#ecfccb", activities:["기준에 따라 분류하기","줄자·계량컵·저울 사용","공구 조립(드라이버·망치)","나사 조이기","전동드라이버 기초"]},
-    { id:"기초작업기술2", key:"box", colorFrom:"#ede9fe", colorTo:"#f5d0fe", activities:["포장·운반·분류·배달","세탁·청소","생활·식품 제조(드립백 등)","사무기기(복사·코팅·제본·세단)","사서보조(바코드·정리·대출)"]},
-    { id:"농생명", key:"leaf", colorFrom:"#d1fae5", colorTo:"#a5f3fc", activities:["화분·모종 심기","물주기·작물 재배","농축산 가공 체험","반려동물 관리","학교 텃밭·실내정원 가꾸기"]},
-    { id:"정보처리", key:"laptop", colorFrom:"#bae6fd", colorTo:"#c7d2fe", activities:["타자·문서·프레젠테이션","그림·동영상 만들기","인터넷 구매·검색·협업","AI·무인단말·디지털금융","드론·코딩로봇 체험"]},
-    { id:"사무지원", key:"files", colorFrom:"#e5e7eb", colorTo:"#e7e5e4", activities:["복합기 사용·문서 관리","책상·탕비실 정돈","우편물 포장·전달","도서 분류·정리","민원 응대 보조"]},
-  ];
-
-  const TOTAL_ROUNDS = 30;
-  let rounds = [];
-  let step = 0;
-  let scores = Object.fromEntries(SUBJECTS.map(s => [s.id, 0]));
-  let student = { school:"", grade:"", name:"" };
-
-  const $ = (s) => document.querySelector(s);
-  function randPick(arr) { return arr[Math.floor(Math.random()*arr.length)]; }
-  function makeGradient(from, to) { return `linear-gradient(135deg, ${from}, ${to})`; }
-  function showPage(id) { ["page-start","page-info","page-game","page-result"].forEach(x => document.getElementById(x).classList.add("hidden")); document.getElementById(id).classList.remove("hidden"); }
-  function saveStudentFromForm() { student.school=$('#school').value.trim(); student.grade=$('#grade').value.trim(); student.name=$('#name').value.trim(); localStorage.setItem("worldcup_student_svg_fixed2", JSON.stringify(student)); }
-  function loadStudent() { try{ const s=JSON.parse(localStorage.getItem("worldcup_student_svg_fixed2")||"{}"); student=Object.assign({school:"",grade:"",name:""}, s); $('#school').value=student.school; $('#grade').value=student.grade; $('#name').value=student.name; }catch(e){} }
-  function updateStudentMeta() { const text=[student.school,student.grade,student.name].filter(Boolean).join(" · "); $('#studentMeta').textContent = text ? `학생정보: ${text}` : "학생정보: (미입력)"; }
-
-  function makeRounds(total = TOTAL_ROUNDS) {
-    const rs = [];
-    for (let i=0;i<total;i++) {
-      let a = randPick(SUBJECTS);
-      let b = randPick(SUBJECTS);
-      while (b.id === a.id) b = randPick(SUBJECTS);
-      const aAct = randPick(a.activities);
-      const bAct = randPick(b.activities);
-      rs.push({ a:{...a, highlight:aAct}, b:{...b, highlight:bAct} });
-    }
-    return rs;
-  }
-
-  function iconSVG(key) {
-    switch(key){
-      case "food": return `<svg width="256" height="256" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><ellipse cx="50" cy="70" rx="32" ry="10" fill="#fff" stroke="#0f172a" stroke-width="2"/><path d="M18 70h64" stroke="#0f172a" stroke-width="3"/><path d="M30 68c0-10 40-10 40 0" fill="#fb923c" stroke="#0f172a" stroke-width="2"/><circle cx="30" cy="45" r="10" fill="#fde68a" stroke="#0f172a" stroke-width="2"/><ellipse cx="66" cy="48" rx="14" ry="11" fill="#fca5a5" stroke="#0f172a" stroke-width="2"/></svg>`;
-      case "care": return `<svg width="256" height="256" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M20 45c0-8 6-14 14-14 6 0 10 3 16 10 6-7 10-10 16-10 8 0 14 6 14 14 0 16-30 28-30 28S20 61 20 45z" fill="#93c5fd" stroke="#0f172a" stroke-width="2"/></svg>`;
-      case "tools": return `<svg width="256" height="256" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M20 70l20-20 10 10-20 20z" fill="#fde68a" stroke="#0f172a" stroke-width="2"/><path d="M52 28l20 20-8 8-20-20z" fill="#fff" stroke="#0f172a" stroke-width="2"/><circle cx="65" cy="35" r="6" fill="#fff" stroke="#0f172a" stroke-width="2"/></svg>`;
-      case "box": return `<svg width="256" height="256" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M20 40l30-12 30 12-30 12-30-12z" fill="#ddd6fe" stroke="#0f172a" stroke-width="2"/><path d="M20 40v30l30 12V52L20 40z" fill="#e9d5ff" stroke="#0f172a" stroke-width="2"/><path d="M50 52l30-12v30L50 82V52z" fill="#f5d0fe" stroke="#0f172a" stroke-width="2"/></svg>`;
-      case "leaf": return `<svg width="256" height="256" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 80c18-10 28-26 28-40-10-2-22 0-28 8-6-8-18-10-28-8 0 14 10 30 28 40z" fill="#86efac" stroke="#0f172a" stroke-width="2"/><path d="M50 48v32" stroke="#0f172a" stroke-width="2"/></svg>`;
-      case "laptop": return `<svg width="256" height="256" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect x="22" y="28" width="56" height="34" rx="4" fill="#c7d2fe" stroke="#0f172a" stroke-width="2"/><rect x="16" y="64" width="68" height="10" rx="2" fill="#93c5fd" stroke="#0f172a" stroke-width="2"/><path d="M22 58h56" stroke="#0f172a" stroke-width="2"/></svg>`;
-      case "files": return `<svg width="256" height="256" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect x="26" y="18" width="40" height="54" rx="4" fill="#e5e7eb" stroke="#0f172a" stroke-width="2"/><rect x="36" y="28" width="40" height="54" rx="4" fill="#f3f4f6" stroke="#0f172a" stroke-width="2"/><path d="M40 40h24M40 48h24M40 56h20" stroke="#0f172a" stroke-width="2"/></svg>`;
-      default: return `<svg width="256" height="256" xmlns="http://www.w3.org/2000/svg"><rect width="256" height="256" fill="#fff"/></svg>`;
-    }
-  }
-
-  function renderChoiceCard(data) {
-    const wrap = document.createElement('div');
-    wrap.className = 'card';
-    wrap.innerHTML = `<div class="card-body">
-        <div class="illus" style="background:${makeGradient(data.colorFrom, data.colorTo)}">
-          <div class="svgwrap">${iconSVG(data.key)}</div>
-        </div>
-        <div class="title">${data.highlight}</div>
-        <button class="btn">이쪽이 더 끌려요</button>
-      </div>`;
-    wrap.querySelector('.btn').addEventListener('click', () => choose(data.id));
-    wrap.querySelector('.illus').addEventListener('click', () => choose(data.id));
-    return wrap;
-  }
-
-  function renderStep() {
-    // 안전장치: rounds가 비어 있으면 생성
-    if (!rounds || rounds.length === 0) { rounds = makeRounds(); }
-    const current = rounds[step];
-    $('#stepNow').textContent = step;
-    $('#progress').value = step;
-    const choices = $('#choices');
-    choices.innerHTML = '';
-    if (current) {
-      choices.appendChild(renderChoiceCard(current.a));
-      choices.appendChild(renderChoiceCard(current.b));
-    }
-  }
-
-  function choose(subjectId) {
-    scores[subjectId] = (scores[subjectId] || 0) + 1;
-    if (step + 1 >= TOTAL_ROUNDS) { finish(); }
-    else { step += 1; renderStep(); }
-  }
-
-  function finish() {
-    showPage('page-result');
-    updateStudentMeta();
-    const ranking = SUBJECTS.map(s => ({ subject:s, score: scores[s.id] })).sort((a,b) => b.score - a.score);
-    const grid = $('#rankGrid'); grid.innerHTML = '';
-    ranking.forEach((r, idx) => {
-      const item = document.createElement('div');
-      const medal = idx===0 ? "🥇" : idx===1 ? "🥈" : idx===2 ? "🥉" : "";
-      item.className = 'badge';
-      item.innerHTML = `<h4><span class="rank">${idx+1}위</span> ${medal} ${r.subject.id} <span class="muted">(${r.score}점)</span></h4>
-        <ul style="margin:0; padding-left:18px; font-size: 13px;">${r.subject.activities.slice(0,4).map(a=>`<li>${a}</li>`).join('')}</ul>`;
-      grid.appendChild(item);
-    });
-    window.scrollTo(0,0);
-  }
-
-  function restart(shuffle=false) {
-    scores = Object.fromEntries(SUBJECTS.map(s => [s.id, 0]));
-    step = 0;
-    if (shuffle) rounds = makeRounds();
-    goGame();
-  }
-
-  // ✅ 핵심 수정: 게임 페이지로 이동할 때 항상 renderStep 실행
-  function goGame() { showPage('page-game'); renderStep(); }
-
-  function downloadJSON() {
-    const ranking = SUBJECTS.map(s => ({ subject:s.id, score: scores[s.id] })).sort((a,b)=>b.score-a.score);
-    const payload = { total: TOTAL_ROUNDS, scores, ranking, student, timestamp: new Date().toISOString() };
-    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob); const a = document.createElement('a');
-    a.href = url; a.download = `흥미결과_${new Date().toISOString().slice(0,10)}.json`; a.click(); URL.revokeObjectURL(url);
-  }
-  function printPDF() { updateStudentMeta(); window.print(); }
-
-  // 네비게이션
-  $('#navStart').addEventListener('click', () => showPage('page-start'));
-  $('#navInfo').addEventListener('click', () => showPage('page-info'));
-  $('#navGame').addEventListener('click', goGame);
-  $('#printBtn').addEventListener('click', printPDF);
-  $('#startToInfo').addEventListener('click', () => showPage('page-info'));
-  $('#startToGame').addEventListener('click', goGame);
-  $('#infoToGame').addEventListener('click', () => { saveStudentFromForm(); goGame(); });
-  $('#infoClear').addEventListener('click', () => { $('#school').value=''; $('#grade').value=''; $('#name').value=''; saveStudentFromForm(); });
-  $('#againBtn').addEventListener('click', () => restart(false));
-  $('#reshuffleBtn').addEventListener('click', () => { rounds = makeRounds(); restart(false); });
-  $('#downloadBtn').addEventListener('click', downloadJSON);
-  $('#printBtn2').addEventListener('click', printPDF);
-
-  // 초기화
-  document.getElementById('year').textContent = new Date().getFullYear();
-  document.getElementById('stepMax').textContent = TOTAL_ROUNDS;
-  document.getElementById('roundTotal').textContent = TOTAL_ROUNDS;
-  loadStudent();
-  rounds = makeRounds();
-  showPage('page-start'); // 시작은 랜딩
-</script>
-</body>
-</html>
+    <footer>© 2025 특수학교고교학점제 전문적학습공동체</footer>
