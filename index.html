@@ -3,39 +3,37 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>선택과목 고르기 – 내 이미지 버전 (업데이트)</title>
+<title>선택과목 고르기 – 하이브리드(이미지+SVG) 고정판</title>
 <style>
-  :root { --bg:#f7f8fb; --card:#ffffff; --muted:#667085; --accent:#0f172a; --primary:#2563eb; }
-  * { box-sizing: border-box; }
-  body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans KR", Arial, "Apple SD Gothic Neo", sans-serif; background: linear-gradient(#fff 0%, #f6f7fb 100%); color:var(--accent); }
-  .container { max-width: 1024px; margin:0 auto; padding: 20px; }
-  header { display:flex; gap:12px; justify-content: space-between; align-items: center; flex-wrap: wrap; }
-  h1 { font-size: clamp(22px, 3vw, 32px); margin: 0; font-weight: 800; letter-spacing:-0.2px; }
-  h2 { font-size: clamp(18px, 2.2vw, 24px); margin: 0 0 8px; font-weight: 800; }
-  .muted { color: var(--muted); font-size: 13px; }
-  .row { display:grid; grid-template-columns: 1fr; gap:16px; margin-top:16px; }
-  @media (min-width: 760px) { .row { grid-template-columns: 1fr 1fr; } }
-  .card { background: var(--card); border:1px solid #e5e7eb; border-radius: 16px; box-shadow: 0 6px 16px rgba(0,0,0,0.06); overflow:hidden; transition: transform .12s ease, box-shadow .12s ease; }
-  .card:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(0,0,0,0.12); }
-  .card-body { padding: 14px; text-align:center; }
-  .illus { position: relative; width: 100%; padding-top: 66%; border-radius: 14px; overflow: hidden; display:flex; align-items:center; justify-content:center; cursor: pointer; background: #f3f4f6; }
-  .illus img { position:absolute; width: 80%; height: 80%; object-fit: contain; border-radius: 12px; }
-  .title { font-weight: 700; font-size: 16px; margin-top: 10px; line-height:1.35; }
-  .btn { display:none; }
-  .toolbar { display:flex; gap:8px; flex-wrap: wrap; }
-  .toolbar .btn { width:auto; display:block; }
-  .progress-wrap { margin-top: 10px; }
-  progress { width:100%; height: 14px; appearance: none; }
-  progress::-webkit-progress-bar { background:#eef2ff; border-radius: 12px; }
-  progress::-webkit-progress-value { background: linear-gradient(90deg, #60a5fa, #2563eb); border-radius: 12px; }
-  footer { text-align:center; margin: 24px 0 8px; font-size: 12px; color: var(--muted); }
-  .guide { text-align:center; font-size:20px; font-weight:700; margin-top:20px; margin-bottom:10px; }
-  .hidden { display:none !important; }
+  :root { --card:#ffffff; --muted:#667085; --accent:#0f172a; --primary:#2563eb; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",Arial,"Apple SD Gothic Neo",sans-serif; background:linear-gradient(#fff, #f6f7fb); color:var(--accent);}
+  .container { max-width:1024px; margin:0 auto; padding:20px; }
+  header { display:flex; gap:12px; justify-content:space-between; align-items:center; flex-wrap:wrap; }
+  h1 { margin:0; font-size:clamp(22px,3vw,32px); font-weight:800; letter-spacing:-.2px; }
+  .muted{ color:var(--muted); }
+  .toolbar { display:flex; gap:8px; flex-wrap:wrap; }
+  .toolbar .btn { padding:10px 14px; border:1px solid #d1d5db; border-radius:10px; background:#fff; cursor:pointer; }
+  .progress-wrap { margin-top:10px; }
+  progress { width:100%; height:14px; appearance:none; }
+  progress::-webkit-progress-bar { background:#eef2ff; border-radius:12px; }
+  progress::-webkit-progress-value { background:linear-gradient(90deg,#60a5fa,#2563eb); border-radius:12px; }
+  .guide { text-align:center; font-size:20px; font-weight:800; margin:18px 0 10px; }
+  .row { display:grid; grid-template-columns:1fr; gap:16px; }
+  @media (min-width:760px){ .row{ grid-template-columns:1fr 1fr; } }
+  .card { background:var(--card); border:1px solid #e5e7eb; border-radius:16px; box-shadow:0 6px 16px rgba(0,0,0,.06); overflow:hidden; }
+  .card-body { padding:14px; text-align:center; }
+  .illus { position:relative; width:100%; padding-top:66%; border-radius:14px; overflow:hidden; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+  .illus .wrap { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
+  .illus img { width:80%; height:80%; object-fit:contain; display:none; } /* 기본은 숨김, 성공 로드 시 표시 */
+  .illus svg { width:70%; height:70%; filter:drop-shadow(0 6px 10px rgba(0,0,0,.12)); }
+  .title { font-weight:700; font-size:16px; margin-top:10px; }
+  footer{ text-align:center; margin:24px 0 8px; font-size:12px; color:var(--muted); }
 </style>
 </head>
 <body>
   <div class="container">
-    <header class="no-print">
+    <header>
       <div>
         <h1>선택과목 고르기</h1>
         <div class="muted">나에게 맞는 선택과목을 알아봅시다.</div>
@@ -57,3 +55,94 @@
     </section>
 
     <footer>© 2025 특수학교고교학점제 전문적학습공동체</footer>
+  </div>
+
+<script>
+/* ===== 데이터 ===== */
+const SUBJECTS = [
+  { id:"외식서비스", key:"food",   colorFrom:"#ffedd5", colorTo:"#ffe4e6", activities:["손님 맞이 인사하기","음식 주문받기","테이블 세팅하기","음식 서빙하기","주방기기 사용하기","식재료 손질·계량·조리","음료·디저트 제조"]},
+  { id:"대인서비스", key:"care",   colorFrom:"#dbeafe", colorTo:"#dcfce7", activities:["인사 예절·감정 표현","고객 상담하기","보행·식사 돕기","세차·세탁·청소 보조","손톱관리·미용 보조"]},
+  { id:"기초작업기술1", key:"tools", colorFrom:"#fef3c7", colorTo:"#ecfccb", activities:["기준에 따라 분류하기","줄자·계량컵·저울 사용","공구 조립(드라이버·망치)","나사 조이기","전동드라이버 기초"]},
+  { id:"기초작업기술2", key:"box",   colorFrom:"#ede9fe", colorTo:"#f5d0fe", activities:["포장·운반·분류·배달","세탁·청소","생활·식품 제조(드립백 등)","사무기기(복사·코팅·제본·세단)","사서보조(바코드·정리·대출)"]},
+  { id:"농생명",     key:"leaf",  colorFrom:"#d1fae5", colorTo:"#a5f3fc", activities:["화분·모종 심기","물주기·작물 재배","농축산 가공 체험","반려동물 관리","학교 텃밭·실내정원 가꾸기"]},
+  { id:"정보처리",   key:"laptop",colorFrom:"#bae6fd", colorTo:"#c7d2fe", activities:["타자·문서·프레젠테이션","그림·동영상 만들기","인터넷 구매·검색·협업","AI·무인단말·디지털금융","드론·코딩로봇 체험"]},
+  { id:"사무지원",   key:"files", colorFrom:"#e5e7eb", colorTo:"#e7e5e4", activities:["복합기 사용·문서 관리","책상·탕비실 정돈","우편물 포장·전달","도서 분류·정리","민원 응대 보조"]},
+];
+const TOTAL_ROUNDS = 30;
+
+/* ===== 유틸 ===== */
+const $ = s => document.querySelector(s);
+function randPick(a){ return a[Math.floor(Math.random()*a.length)]; }
+function makeGradient(a,b){ return `linear-gradient(135deg, ${a}, ${b})`; }
+function makeRounds(n=TOTAL_ROUNDS){
+  const rs=[];
+  for(let i=0;i<n;i++){
+    let a=randPick(SUBJECTS), b=randPick(SUBJECTS);
+    while(b.id===a.id) b=randPick(SUBJECTS);
+    rs.push({ a:{...a, highlight:randPick(a.activities)}, b:{...b, highlight:randPick(b.activities)} });
+  }
+  return rs;
+}
+
+/* ===== 아이콘: 이미지 성공 시 이미지 표시, 실패 시 SVG로 대체 ===== */
+function svgFallback(key){
+  switch(key){
+    case "leaf": return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 80c18-10 28-26 28-40-10-2-22 0-28 8-6-8-18-10-28-8 0 14 10 30 28 40z" fill="#86efac" stroke="#0f172a" stroke-width="2"/><path d="M50 48v32" stroke="#0f172a" stroke-width="2"/></svg>`;
+    case "care": return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M20 45c0-8 6-14 14-14 6 0 10 3 16 10 6-7 10-10 16-10 8 0 14 6 14 14 0 16-30 28-30 28S20 61 20 45z" fill="#93c5fd" stroke="#0f172a" stroke-width="2"/></svg>`;
+    case "food": return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><ellipse cx="50" cy="70" rx="32" ry="10" fill="#fff" stroke="#0f172a" stroke-width="2"/><path d="M18 70h64" stroke="#0f172a" stroke-width="3"/><path d="M30 68c0-10 40-10 40 0" fill="#fb923c" stroke="#0f172a" stroke-width="2"/><circle cx="30" cy="45" r="10" fill="#fde68a" stroke="#0f172a" stroke-width="2"/><ellipse cx="66" cy="48" rx="14" ry="11" fill="#fca5a5" stroke="#0f172a" stroke-width="2"/></svg>`;
+    case "tools": return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M20 70l20-20 10 10-20 20z" fill="#fde68a" stroke="#0f172a" stroke-width="2"/><path d="M52 28l20 20-8 8-20-20z" fill="#fff" stroke="#0f172a" stroke-width="2"/><circle cx="65" cy="35" r="6" fill="#fff" stroke="#0f172a" stroke-width="2"/></svg>`;
+    case "box": return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M20 40l30-12 30 12-30 12-30-12z" fill="#ddd6fe" stroke="#0f172a" stroke-width="2"/><path d="M20 40v30l30 12V52L20 40z" fill="#e9d5ff" stroke="#0f172a" stroke-width="2"/><path d="M50 52l30-12v30L50 82V52z" fill="#f5d0fe" stroke="#0f172a" stroke-width="2"/></svg>`;
+    case "laptop": return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect x="22" y="28" width="56" height="34" rx="4" fill="#c7d2fe" stroke="#0f172a" stroke-width="2"/><rect x="16" y="64" width="68" height="10" rx="2" fill="#93c5fd" stroke="#0f172a" stroke-width="2"/><path d="M22 58h56" stroke="#0f172a" stroke-width="2"/></svg>`;
+    case "files": return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect x="26" y="18" width="40" height="54" rx="4" fill="#e5e7eb" stroke="#0f172a" stroke-width="2"/><rect x="36" y="28" width="40" height="54" rx="4" fill="#f3f4f6" stroke="#0f172a" stroke-width="2"/><path d="M40 40h24M40 48h24M40 56h20" stroke="#0f172a" stroke-width="2"/></svg>`;
+    default: return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="#fff"/></svg>`;
+  }
+}
+
+function renderChoiceCard(d){
+  const card = document.createElement('div'); card.className='card';
+  card.innerHTML = `
+    <div class="card-body">
+      <div class="illus" style="background:${makeGradient(d.colorFrom, d.colorTo)}">
+        <div class="wrap">
+          <img alt="${d.key}" src="images/${d.key}.png">
+          <div class="svgwrap">${svgFallback(d.key)}</div>
+        </div>
+      </div>
+      <div class="title">${d.highlight}</div>
+    </div>
+  `;
+  // 이미지가 성공적으로 로드되면 SVG를 숨김
+  const img = card.querySelector('img');
+  const svg = card.querySelector('.svgwrap');
+  img.addEventListener('load', ()=>{ img.style.display='block'; svg.style.display='none'; });
+  img.addEventListener('error', ()=>{ img.style.display='none'; svg.style.display='block'; });
+  // 그림 클릭으로 선택
+  card.querySelector('.illus').addEventListener('click', ()=>choose(d.id));
+  return card;
+}
+
+/* ===== 진행 로직 ===== */
+let rounds=[], step=0, scores=Object.fromEntries(SUBJECTS.map(s=>[s.id,0]));
+function renderStep(){
+  if(!rounds.length) rounds = makeRounds();
+  $('#progress').value = step;
+  const cur = rounds[step], box = $('#choices'); box.innerHTML='';
+  box.appendChild(renderChoiceCard(cur.a));
+  box.appendChild(renderChoiceCard(cur.b));
+}
+function choose(id){
+  scores[id]=(scores[id]||0)+1;
+  if(step+1>=TOTAL_ROUNDS){ step=0; rounds=makeRounds(); renderStep(); } // (결과 페이지 없이) 루프
+  else { step++; renderStep(); }
+}
+
+/* ===== 시작 ===== */
+window.addEventListener('DOMContentLoaded', ()=>{
+  renderStep();
+  $('#navGame').addEventListener('click', renderStep);
+  $('#navStart').addEventListener('click', ()=>{ step=0; rounds=makeRounds(); renderStep(); });
+  $('#printBtn').addEventListener('click', ()=>window.print());
+});
+</script>
+</body>
+</html>
