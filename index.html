@@ -147,6 +147,15 @@ const SUBJECTS = [
   { id:"정보처리",   key:"laptop",colorFrom:"#bae6fd", colorTo:"#c7d2fe", activities:["타자·문서·프레젠테이션","그림·동영상 만들기","인터넷 구매·검색·협업","AI·무인단말·디지털금융","드론·코딩로봇 체험"]},
   { id:"사무지원",   key:"files", colorFrom:"#e5e7eb", colorTo:"#e7e5e4", activities:["복합기 사용·문서 관리","책상·탕비실 정돈","우편물 포장·전달","도서 분류·정리","민원 응대 보조"]},
 ];
+  const IMAGE_COUNT = {
+  leaf: 10,  
+  care: 12, 
+  food: 14,
+  tools: 13,
+  box: 10,
+  laptop: 15,
+  files: 11
+  };
 const TOTAL_ROUNDS = 30;
 
 /* ==== 공통 ==== */
@@ -186,7 +195,12 @@ function choiceCard(d){
     <div class="card-body">
       <div class="illus" style="background:${makeGradient(d.colorFrom,d.colorTo)}">
         <div class="wrap">
-          <img alt="${d.key}" src="images/${d.key}.png">
+function randomImageFor(key){
+  const n = IMAGE_COUNT[key] || 10;                
+  const i = Math.floor(Math.random() * n) + 1;     
+  const name = String(i).padStart(2, '0');         
+  return `images/${key}_${name}.png`;
+}
           <div class="svgwrap">${svgFallback(d.key)}</div>
         </div>
       </div>
