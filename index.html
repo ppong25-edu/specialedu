@@ -156,6 +156,12 @@ const SUBJECTS = [
   laptop: 15,
   files: 11
   };
+function randomImageFor(key){
+  const n = IMAGE_COUNT[key] || 10;          // 과목별 보유 장수
+  const i = Math.floor(Math.random() * n) + 1; // 1..n
+  const name = String(i).padStart(2, '0');     // 01,02...
+  return `images/${key}_${name}.png`;          // 예: images/leaf_03.png
+}
 const TOTAL_ROUNDS = 30;
 
 /* ==== 공통 ==== */
@@ -191,21 +197,16 @@ function svgFallback(key){
 }
 function choiceCard(d){
   const el=document.createElement('div'); el.className='card';
-  el.innerHTML=`
-    <div class="card-body">
-      <div class="illus" style="background:${makeGradient(d.colorFrom,d.colorTo)}">
-        <div class="wrap">
-function randomImageFor(key){
-  const n = IMAGE_COUNT[key] || 10;                
-  const i = Math.floor(Math.random() * n) + 1;     
-  const name = String(i).padStart(2, '0');         
-  return `images/${key}_${name}.png`;
-}
-          <div class="svgwrap">${svgFallback(d.key)}</div>
-        </div>
+el.innerHTML = `
+  <div class="card-body">
+    <div class="illus" style="background:${makeGradient(d.colorFrom,d.colorTo)}">
+      <div class="wrap">
+        <img alt="${d.key}" src="${randomImageFor(d.key)}">
+        <div class="svgwrap">${svgFallback(d.key)}</div>
       </div>
-      <div class="title">${d.highlight}</div>
-    </div>`;
+    </div>
+    <div class="title">${d.highlight}</div>
+  </div>`;
   const img=el.querySelector('img'); const svg=el.querySelector('.svgwrap');
   img.addEventListener('load', ()=>{ img.style.display='block'; svg.style.display='none'; });
   img.addEventListener('error', ()=>{ img.style.display='none'; svg.style.display='block'; });
