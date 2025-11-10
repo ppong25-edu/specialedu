@@ -138,40 +138,130 @@
 
 <script>
 /* ==== 데이터 ==== */
+/* SUBJECTS */
 const SUBJECTS = [
- { id:"외식서비스", key:"food", colorFrom:"#ffedd5", colorTo:"#ffe4e6", activities:[
-  "손님 맞이 인사하기",
-  "음식 주문받기",
-  "테이블 세팅하기(식탁보, 냅킨 등)",
-  "음식 서빙하기",
-  "기물 취급하기 & 비품 관리하기",
-  "주방기기(조리기구) 사용하기",
-  "매장 청소하기",
-  "화장실 청소하기",
-  "분리배출하기",
-  "계량하기",
-  "식재료 관리 및 손질하기",
-  "음식 조리하기(끓이기, 데치기, 볶기, 굽기, 튀기기, 찌기, 삶기)",
-  "음료 제조하기",
-  "디저트 제조하기"
-]},
-  { id:"대인서비스", key:"care",   colorFrom:"#dbeafe", colorTo:"#dcfce7", activities:["인사 예절·감정 표현","고객 상담하기","보행·식사 돕기","세차·세탁·청소 보조","손톱관리·미용 보조"]},
-  { id:"기초작업기술1", key:"tools", colorFrom:"#fef3c7", colorTo:"#ecfccb", activities:["기준에 따라 분류하기","줄자·계량컵·저울 사용","공구 조립(드라이버·망치)","나사 조이기","전동드라이버 기초"]},
-  { id:"기초작업기술2", key:"box",   colorFrom:"#ede9fe", colorTo:"#f5d0fe", activities:["포장·운반·분류·배달","세탁·청소","생활·식품 제조(드립백 등)","사무기기(복사·코팅·제본·세단)","사서보조(바코드·정리·대출)"]},
-  { id:"농생명",     key:"leaf",  colorFrom:"#d1fae5", colorTo:"#a5f3fc", activities:["화분·모종 심기","물주기·작물 재배","농축산 가공 체험","반려동물 관리","학교 텃밭·실내정원 가꾸기"]},
-  { id:"정보처리",   key:"laptop",colorFrom:"#bae6fd", colorTo:"#c7d2fe", activities:["타자·문서·프레젠테이션","그림·동영상 만들기","인터넷 구매·검색·협업","AI·무인단말·디지털금융","드론·코딩로봇 체험"]},
-  { id:"사무지원",   key:"files", colorFrom:"#e5e7eb", colorTo:"#e7e5e4", activities:["복합기 사용·문서 관리","책상·탕비실 정돈","우편물 포장·전달","도서 분류·정리","민원 응대 보조"]},
+  { id:"외식서비스", key:"food", colorFrom:"#ffedd5", colorTo:"#ffe4e6", activities:[
+    "손님 맞이 인사하기",
+    "음식 주문받기",
+    "테이블 세팅하기(식탁보, 냅킨 등)",
+    "음식 서빙하기",
+    "기물 취급하기 & 비품 관리하기",
+    "주방기기(조리기구) 사용하기",
+    "매장 청소하기",
+    "화장실 청소하기",
+    "분리배출하기",
+    "계량하기",
+    "식재료 관리 및 손질하기",
+    "음식 조리하기(끓이기, 데치기, 볶기, 굽기, 튀기기, 찌기, 삶기)",
+    "음료 제조하기",
+    "디저트 제조하기"
+  ]},
+
+  { id:"대인서비스", key:"care", colorFrom:"#dbeafe", colorTo:"#dcfce7", activities:[
+    "인사 예절 배우기",
+    "감정 표현 연습",
+    "고객 상담하기",
+    "사람과 상호작용하기",
+    "이동(보행) 돕기",
+    "식사(간식) 돕기",
+    "세차하기",
+    "의류 세탁하기",
+    "도로로 물건 배달하기",
+    "사무실 청소하기",
+    "가정 내 정리정돈하기",
+    "손톱 관리 서비스 보조",
+    "미용 보조(머리 감겨주기, 머리카락 청소 등)"
+  ]},
+
+  { id:"기초작업기술1", key:"tools", colorFrom:"#fef3c7", colorTo:"#ecfccb", activities:[
+    "기준에 따라 물건 분류하기",
+    "줄자로 길이 측정하기",
+    "계량컵으로 물이나 우유 계량하기",
+    "저울로 재료 계량하기",
+    "공구를 이용하여 조립하기",
+    "나사 조이기 실습",
+    "간단한 조립 작업",
+    "드라이버 사용법 알기",
+    "망치와 장도리 사용법 알기",
+    "전동드라이버 사용법 알기"
+  ]},
+
+  { id:"기초작업기술2", key:"box", colorFrom:"#ede9fe", colorTo:"#f5d0fe", activities:[
+    "포장하기 (라벨 붙이기 포함)",
+    "운반하기 (조심성 중요)",
+    "물품 분류 및 배달하기",
+    "세탁하기",
+    "청소하기",
+    "생활용품 제조하기 (양말목 컵 받침 등)",
+    "식품 가공 직무 (드립백 커피 만들기 등)",
+    "복사기·코팅기·제본기·세단기 사용하기",
+    "이름표 달기 (바코드·색띠 등)",
+    "도서 대출·반납 직무 수행하기",
+    "도서 운반 및 정리하기",
+    "제과제빵 체험하기",
+    "커피 제조하기"
+  ]},
+
+  { id:"농생명", key:"leaf", colorFrom:"#d1fae5", colorTo:"#a5f3fc", activities:[
+    "화분 심기",
+    "모종 심기",
+    "물주기 실습",
+    "농축산물 가공품 만들기",
+    "작물 재배하기",
+    "동물 산업 알기",
+    "반려동물 관리하기",
+    "숲 관리 방법 알기",
+    "친환경 농축산물",
+    "학교 텃밭·주말 농장·실내 정원 가꾸기"
+  ]},
+
+  { id:"정보처리", key:"laptop", colorFrom:"#bae6fd", colorTo:"#c7d2fe", activities:[
+    "타자 연습",
+    "문서 작성",
+    "그림판으로 디자인하기",
+    "애플리케이션 활용하기",
+    "동영상 만들기",
+    "문서 작성 프로그램 사용하기",
+    "프레젠테이션 만들기",
+    "인터넷으로 물건 구매하기",
+    "인터넷으로 정보 찾기",
+    "온라인으로 협업하기",
+    "인공지능 활용하기",
+    "무인단말기 사용하기",
+    "디지털 금융 서비스 활용하기",
+    "온라인 행정서비스 이용하기",
+    "드론으로 할 수 있는 일 체험하기",
+    "코딩 로봇 프로그램 체험하기"
+  ]},
+
+  { id:"사무지원", key:"files", colorFrom:"#e5e7eb", colorTo:"#e7e5e4", activities:[
+    "복사기 사용",
+    "문서 정리",
+    "책상 정돈하기",
+    "사무용품 사용하기",
+    "복합 사무기기 사용하기",
+    "문서 관리 하기",
+    "사무실 및 탕비실 관리하기",
+    "우편물 전달 및 포장하기",
+    "우편물 포장하기",
+    "도서 분류 및 정리하기",
+    "민원인 응대하기"
+  ]},
 ];
-  const IMAGE_COUNT = {
-  leaf: 10,  
-  care: 12, 
+
+/* 이미지 보유 장수 (한 장씩이면 전부 1로 유지 가능) */
+const IMAGE_COUNT = {
+  leaf: 10,
+  care: 12,
   food: 14,
   tools: 13,
-  box: 10,
+  box: 13,
   laptop: 15,
   files: 11
-  };
-  const ACTIVITY_CODE = {
+};
+
+/* 문구 → 파일코드 매핑 (문구와 완전히 동일해야 함) */
+const ACTIVITY_CODE = {
   food: {
     "손님 맞이 인사하기": "greet",
     "음식 주문받기": "order",
@@ -186,27 +276,138 @@ const SUBJECTS = [
     "식재료 관리 및 손질하기": "prep",
     "음식 조리하기(끓이기, 데치기, 볶기, 굽기, 튀기기, 찌기, 삶기)": "cook",
     "음료 제조하기": "drink",
-    "디저트 제조하기": "dessert",
+    "디저트 제조하기": "dessert"
   },
+
+  care: {
+    "인사 예절 배우기": "greeting",
+    "감정 표현 연습": "emotion",
+    "고객 상담하기": "consult",
+    "사람과 상호작용하기": "interaction",
+    "이동(보행) 돕기": "mobility",
+    "식사(간식) 돕기": "mealassist",
+    "세차하기": "carwash",
+    "의류 세탁하기": "laundry",
+    "도로로 물건 배달하기": "delivery",
+    "사무실 청소하기": "officeclean",
+    "가정 내 정리정돈하기": "homeclean",
+    "손톱 관리 서비스 보조": "nailcare",
+    "미용 보조(머리 감겨주기, 머리카락 청소 등)": "haircare"
+  },
+
+  tools: {
+    "기준에 따라 물건 분류하기": "sort",
+    "줄자로 길이 측정하기": "measurelength",
+    "계량컵으로 물이나 우유 계량하기": "liquidmeasure",
+    "저울로 재료 계량하기": "weigh",
+    "공구를 이용하여 조립하기": "assemble",
+    "나사 조이기 실습": "screw",
+    "간단한 조립 작업": "simpleassemble",
+    "드라이버 사용법 알기": "driver",
+    "망치와 장도리 사용법 알기": "hammer",
+    "전동드라이버 사용법 알기": "electricdriver"
+  },
+
+  box: {
+    "포장하기 (라벨 붙이기 포함)": "pack",
+    "운반하기 (조심성 중요)": "carry",
+    "물품 분류 및 배달하기": "delivery",
+    "세탁하기": "laundry",
+    "청소하기": "clean",
+    "생활용품 제조하기 (양말목 컵 받침 등)": "sockcraft",
+    "식품 가공 직무 (드립백 커피 만들기 등)": "dripcoffee",
+    "복사기·코팅기·제본기·세단기 사용하기": "officeequip",
+    "이름표 달기 (바코드·색띠 등)": "labeling",
+    "도서 대출·반납 직무 수행하기": "bookloan",
+    "도서 운반 및 정리하기": "bookorganize",
+    "제과제빵 체험하기": "baking",
+    "커피 제조하기": "coffee"
+  },
+
+  leaf: {
+    "화분 심기": "plantpot",
+    "모종 심기": "seedling",
+    "물주기 실습": "watering",
+    "농축산물 가공품 만들기": "processing",
+    "작물 재배하기": "cultivation",
+    "동물 산업 알기": "animalindustry",
+    "반려동물 관리하기": "petcare",
+    "숲 관리 방법 알기": "forestcare",
+    "친환경 농축산물": "ecoagri",
+    "학교 텃밭·주말 농장·실내 정원 가꾸기": "schoolfarm"
+  },
+
+  laptop: {
+    "타자 연습": "typing",
+    "문서 작성": "document",
+    "그림판으로 디자인하기": "paint",
+    "애플리케이션 활용하기": "appuse",
+    "동영상 만들기": "video",
+    "문서 작성 프로그램 사용하기": "wordprogram",
+    "프레젠테이션 만들기": "presentation",
+    "인터넷으로 물건 구매하기": "shopping",
+    "인터넷으로 정보 찾기": "search",
+    "온라인으로 협업하기": "collaboration",
+    "인공지능 활용하기": "aiuse",
+    "무인단말기 사용하기": "kiosk",
+    "디지털 금융 서비스 활용하기": "fintech",
+    "온라인 행정서비스 이용하기": "egov",
+    "드론으로 할 수 있는 일 체험하기": "drone",
+    "코딩 로봇 프로그램 체험하기": "codingrobot"
+  },
+
+  files: {
+    "복사기 사용": "copy",
+    "문서 정리": "document",
+    "책상 정돈하기": "desk",
+    "사무용품 사용하기": "officeitem",
+    "복합 사무기기 사용하기": "multimachine",
+    "문서 관리 하기": "filemanage",
+    "사무실 및 탕비실 관리하기": "officeclean",
+    "우편물 전달 및 포장하기": "maildeliver",
+    "우편물 포장하기": "mailpack",
+    "도서 분류 및 정리하기": "booksort",
+    "민원인 응대하기": "customer"
+  }
 };
-  const ACTIVITY_COUNT = {
+
+/* 각 코드별 이미지 장수 (한 장이면 전부 1) */
+const ACTIVITY_COUNT = {
   food: {
-    greet: 1,
-    order: 1,
-    table: 1,
-    serve: 1,
-    utensil: 1,
-    appliance: 1,
-    storeclean: 1,
-    toiletclean: 1,
-    recycle: 1,
-    measure: 1,
-    prep: 1,
-    cook: 1,
-    drink: 1,
-    dessert: 1,
+    greet: 1, order: 1, table: 1, serve: 1, utensil: 1, appliance: 1,
+    storeclean: 1, toiletclean: 1, recycle: 1, measure: 1, prep: 1,
+    cook: 1, drink: 1, dessert: 1
   },
+  care: {
+    greeting: 1, emotion: 1, consult: 1, interaction: 1, mobility: 1,
+    mealassist: 1, carwash: 1, laundry: 1, delivery: 1, officeclean: 1,
+    homeclean: 1, nailcare: 1, haircare: 1
+  },
+  tools: {
+    sort: 1, measurelength: 1, liquidmeasure: 1, weigh: 1, assemble: 1,
+    screw: 1, simpleassemble: 1, driver: 1, hammer: 1, electricdriver: 1
+  },
+  box: {
+    pack: 1, carry: 1, delivery: 1, laundry: 1, clean: 1,
+    sockcraft: 1, dripcoffee: 1, officeequip: 1, labeling: 1,
+    bookloan: 1, bookorganize: 1, baking: 1, coffee: 1
+  },
+  leaf: {
+    plantpot: 1, seedling: 1, watering: 1, processing: 1, cultivation: 1,
+    animalindustry: 1, petcare: 1, forestcare: 1, ecoagri: 1, schoolfarm: 1
+  },
+  laptop: {
+    typing: 1, document: 1, paint: 1, appuse: 1, video: 1, wordprogram: 1,
+    presentation: 1, shopping: 1, search: 1, collaboration: 1, aiuse: 1,
+    kiosk: 1, fintech: 1, egov: 1, drone: 1, codingrobot: 1
+  },
+  files: {
+    copy: 1, document: 1, desk: 1, officeitem: 1, multimachine: 1,
+    filemanage: 1, officeclean: 1, maildeliver: 1, mailpack: 1,
+    booksort: 1, customer: 1
+  }
 };
+
 function randomImageFor(key){
   const n = IMAGE_COUNT[key] || 10;          // 과목별 보유 장수
   const i = Math.floor(Math.random() * n) + 1; // 1..n
