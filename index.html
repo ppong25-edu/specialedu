@@ -139,7 +139,22 @@
 <script>
 /* ==== 데이터 ==== */
 const SUBJECTS = [
-  { id:"외식서비스", key:"food",   colorFrom:"#ffedd5", colorTo:"#ffe4e6", activities:["손님 맞이 인사하기","음식 주문받기","테이블 세팅하기","음식 서빙하기","주방기기 사용하기","식재료 손질·계량·조리","음료·디저트 제조"]},
+ { id:"외식서비스", key:"food", colorFrom:"#ffedd5", colorTo:"#ffe4e6", activities:[
+  "손님 맞이 인사하기",
+  "음식 주문받기",
+  "테이블 세팅하기(식탁보, 냅킨 등)",
+  "음식 서빙하기",
+  "기물 취급하기 & 비품 관리하기",
+  "주방기기(조리기구) 사용하기",
+  "매장 청소하기",
+  "화장실 청소하기",
+  "분리배출하기",
+  "계량하기",
+  "식재료 관리 및 손질하기",
+  "음식 조리하기(끓이기, 데치기, 볶기, 굽기, 튀기기, 찌기, 삶기)",
+  "음료 제조하기",
+  "디저트 제조하기"
+]},
   { id:"대인서비스", key:"care",   colorFrom:"#dbeafe", colorTo:"#dcfce7", activities:["인사 예절·감정 표현","고객 상담하기","보행·식사 돕기","세차·세탁·청소 보조","손톱관리·미용 보조"]},
   { id:"기초작업기술1", key:"tools", colorFrom:"#fef3c7", colorTo:"#ecfccb", activities:["기준에 따라 분류하기","줄자·계량컵·저울 사용","공구 조립(드라이버·망치)","나사 조이기","전동드라이버 기초"]},
   { id:"기초작업기술2", key:"box",   colorFrom:"#ede9fe", colorTo:"#f5d0fe", activities:["포장·운반·분류·배달","세탁·청소","생활·식품 제조(드립백 등)","사무기기(복사·코팅·제본·세단)","사서보조(바코드·정리·대출)"]},
@@ -156,13 +171,75 @@ const SUBJECTS = [
   laptop: 15,
   files: 11
   };
+  const ACTIVITY_CODE = {
+  food: {
+    "손님 맞이 인사하기": "greet",
+    "음식 주문받기": "order",
+    "테이블 세팅하기(식탁보, 냅킨 등)": "table",
+    "음식 서빙하기": "serve",
+    "기물 취급하기 & 비품 관리하기": "utensil",
+    "주방기기(조리기구) 사용하기": "appliance",
+    "매장 청소하기": "storeclean",
+    "화장실 청소하기": "toiletclean",
+    "분리배출하기": "recycle",
+    "계량하기": "measure",
+    "식재료 관리 및 손질하기": "prep",
+    "음식 조리하기(끓이기, 데치기, 볶기, 굽기, 튀기기, 찌기, 삶기)": "cook",
+    "음료 제조하기": "drink",
+    "디저트 제조하기": "dessert",
+  },
+};
+  const ACTIVITY_COUNT = {
+  food: {
+    greet: 1,
+    order: 1,
+    table: 1,
+    serve: 1,
+    utensil: 1,
+    appliance: 1,
+    storeclean: 1,
+    toiletclean: 1,
+    recycle: 1,
+    measure: 1,
+    prep: 1,
+    cook: 1,
+    drink: 1,
+    dessert: 1,
+  },
+};
 function randomImageFor(key){
   const n = IMAGE_COUNT[key] || 10;          // 과목별 보유 장수
   const i = Math.floor(Math.random() * n) + 1; // 1..n
   const name = String(i).padStart(2, '0');     // 01,02...
   return `images/${key}_${name}.png`;          // 예: images/leaf_03.png
 }
-const TOTAL_ROUNDS = 30;
+function normalize(s){
+  return s.replace(/\s+/g,'').replace(/[()]/g,'').replace(/[·&]/g,'').trim();
+}
+function resolveActivityCode(key, activity){
+  const table = ACTIVITY_CODE[key];
+  if(!table) return null;
+  if (table[activity]) return table[activity];        // 정확 매칭
+  const want = normalize(activity);                   // 느슨 매칭
+  for (const k in table){
+    const cand = normalize(k);
+    if (want === cand || cand.includes(want) || want.includes(cand)) {
+      return table[k];
+    }
+  }
+  return null;
+}
+function imageFor(key, activity){
+  const code = resolveActivityCode(key, activity);
+  if (code) {
+    const n = (ACTIVITY_COUNT[key] && ACTIVITY_COUNT[key][code]) || 1;
+    const i = Math.floor(Math.random() * n) + 1;
+    const name = String(i).padStart(2,'0');
+    return `images/${key}_${code}_${name}.png`;       // 활동별 파일
+  }
+  return randomImageFor(key);                         // 과목 랜덤(백업)
+}
+  const TOTAL_ROUNDS = 30;
 
 /* ==== 공통 ==== */
 const $ = s => document.querySelector(s);
@@ -201,7 +278,7 @@ el.innerHTML = `
   <div class="card-body">
     <div class="illus" style="background:${makeGradient(d.colorFrom,d.colorTo)}">
       <div class="wrap">
-        <img alt="${d.key}" src="${randomImageFor(d.key)}">
+        <img alt="${d.key}" src="${imageFor(d.key, d.highlight)}">
         <div class="svgwrap">${svgFallback(d.key)}</div>
       </div>
     </div>
