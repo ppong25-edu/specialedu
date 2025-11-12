@@ -571,5 +571,23 @@ document.getElementById('stepMax').textContent   = TOTAL_ROUNDS;
 loadStudent();
 showPage('page-start');
 </script>
+<script>
+  // 어디를 클릭하든 버블링으로 잡아서 처리
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('#infoToGame')) {
+      // 학생정보 저장 → 게임화면 전환 → 라운드 렌더
+      try { saveStudent(); } catch {}
+      try { showPage('page-game'); } catch {}
+      try { renderStep(); } catch {}
+    }
+    if (e.target.closest('#infoClear')) {
+      ['school','grade','name'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      try { saveStudent(); } catch {}
+    }
+  });
+</script>
 </body>
 </html>
