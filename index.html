@@ -170,7 +170,7 @@ const SUBJECTS = [
     "식사(간식) 돕기",
     "세차하기",
     "의류 세탁하기",
-    "도로로 물건 배달하기",
+    "도보로 물건 배달하기",
     "사무실 청소하기",
     "가정 내 정리정돈하기",
     "손톱 관리 서비스 보조",
@@ -478,20 +478,37 @@ function svgFallback(key){
   }
 }
 function choiceCard(d){
-  const el=document.createElement('div'); el.className='card';
-el.innerHTML = `
-  <div class="card-body">
-    <div class="illus" style="background:${makeGradient(d.colorFrom,d.colorTo)}">
-      <div class="wrap">
-        <img alt="${d.key}" src="${imageFor(d.key, d.highlight)}">
-        <div class="svgwrap">${svgFallback(d.key)}</div>
+  const el = document.createElement('div');
+  el.className = 'card';
+
+  // 템플릿에서 img src를 빼고 만들어 둔다
+  el.innerHTML = `
+    <div class="card-body">
+      <div class="illus" style="background:${makeGradient(d.colorFrom,d.colorTo)}">
+        <div class="wrap">
+          <img alt="${d.key}">
+          <div class="svgwrap">${svgFallback(d.key)}</div>
+        </div>
       </div>
-    </div>
-    <div class="title">${d.highlight}</div>
-  </div>`;
-  const img=el.querySelector('img'); const svg=el.querySelector('.svgwrap');
-  img.addEventListener('load', ()=>{ img.style.display='block'; svg.style.display='none'; });
-  img.addEventListener('error', ()=>{ img.style.display='none'; svg.style.display='block'; });
+      <div class="title">${d.highlight}</div>
+    </div>`;
+
+  const img = el.querySelector('img');
+  const svg = el.querySelector('.svgwrap');
+  const src = imageFor(d.key, d.highlight);
+
+  const showImg = () => { img.style.display='block'; svg.style.display='none'; };
+  const showSvg = () => { img.style.display='none';  svg.style.display='block'; };
+
+  img.addEventListener('load', showImg);
+  img.addEventListener('error', showSvg);
+
+  // 마지막에 src 지정 (캐시여도 load 안 놓치게)
+  img.src = src;
+
+  // 이미 캐시 완료 상태면 즉시 표시
+  if (img.complete && img.naturalWidth > 0) showImg();
+
   el.querySelector('.illus').addEventListener('click', ()=>choose(d.id));
   return el;
 }
