@@ -557,38 +557,45 @@ showPage('page-start');
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   const $ = (id) => document.getElementById(id);
-  const show = (id) => {
-    document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
-    $(id).classList.remove('hidden');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // 라우트 섹션만 숨김/표시
+  const show = (id, onshow) => {
+    document.querySelectorAll('section.route').forEach(s => s.classList.add('hidden'));
+    const el = document.getElementById(id);
+    if (el) {
+      el.classList.remove('hidden');
+      // 보여준 뒤에 렌더/리사이즈 트리거
+      if (typeof onshow === 'function') onshow();
+      requestAnimationFrame(() => window.dispatchEvent(new Event('resize')));
+    }
   };
 
-  // 페이지 섹션 id는 실제 것과 맞춰 수정
-  const pageStart = 'page-start';
-  const pageInfo  = 'page-info';
-  const pageGame  = 'page-game';   // ← 실제 게임 섹션 id로 바꿔줘
+  // 섹션 ID들 (실제 ID와 꼭 맞추기)
+  const START = 'page-start';
+  const INFO  = 'page-info';
+  const GAME  = 'page-game';
 
-  // 1) 시작 -> 정보입력
-  $('startToInfo')?.addEventListener('click', () => show(pageInfo));
+  // 버튼 이벤트
+  document.getElementById('startToInfo')?.addEventListener('click', () => show(INFO));
 
-  // 2) 정보입력 -> 게임 화면
-  $('infoToGame')?.addEventListener('click', () => {
-    // (선택) 유효성 검사
-    // if (!$('school').value || !$('grade').value || !$('name').value) return alert('모두 입력해 주세요!');
-    show(pageGame);
+  document.getElementById('infoToGame')?.addEventListener('click', () => {
+    // TODO: 유효성 검사 필요하면 여기서
+    show(GAME, () => {
+      // 게임 라운드/카드 렌더를 "보여준 뒤"에 호출
+      if (typeof renderRound === 'function') renderRound();
+    });
   });
 
-  // 3) 다시 입력(초기화)
-  $('infoClear')?.addEventListener('click', () => {
-    ['school','grade','name'].forEach(id => { const el=$(id); if (el) el.value=''; });
-    // 깔끔하게 포커스 주기
-    $('school')?.focus();
+  document.getElementById('infoClear')?.addEventListener('click', () => {
+    ['school','grade','name'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+    document.getElementById('school')?.focus();
   });
 
-  // 초기엔 시작 화면만 보이게
-  show(pageStart);
+  // 초기 진입
+  show(START);
 });
 </script>
+
 
 </body>
 </html>
