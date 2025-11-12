@@ -55,7 +55,6 @@
 .hero h1 { 
   margin: 22px 0 36px;   /* 제목 아래 간격 ↑ */
 }
-
 .hero p {
   font-size: 20px;
   line-height: 2;
@@ -64,13 +63,11 @@
   color: var(--muted);
   text-align: center;    /* 문장도 가운데 */
 }
-
 .hero .cta { 
   margin-top: 28px;      /* 버튼 위 간격 ↑ (4번) */
   gap: 12px;             /* 버튼 간 간격 */
   justify-content: center; /* 버튼 묶음 가운데 정렬 */
 }
- 
 </style>
 </head>
 <body>
@@ -87,7 +84,6 @@
         <button class="btn" id="printBtn" type="button">결과 인쇄/PDF</button>
       </div>
     </header>
-
     <!-- 시작 -->
     <section id="page-start" class="hero">
       <h1>선택과목 찾기</h1>
@@ -97,7 +93,6 @@
         <button class="btn primary" id="startToInfo" type="button">게임 시작</button>
       </div>
     </section>
-
     <!-- 정보 입력 -->
     <section id="page-info" class="hidden">
       <h2 style="margin:34px 0 8px; font-weight:800;">시작하기 전에 입력해주세요.</h2>
@@ -113,7 +108,6 @@
         </div>
       </div>
     </section>
-
     <!-- 진행 -->
     <section id="page-game" class="hidden">
       <div class="progress-wrap">
@@ -123,7 +117,6 @@
       <div class="guide">아래의 두 가지 중, 더 흥미로운 활동을 선택해주세요.</div>
       <div class="row" id="choices"></div>
     </section>
-
     <!-- 결과 -->
     <section id="page-result" class="hidden" style="margin-top:18px;">
       <h2 style="margin:0 0 8px; font-weight:800;">결과</h2>
@@ -136,10 +129,8 @@
         <button class="btn" id="printBtn2" type="button">인쇄/PDF</button>
       </div>
     </section>
-
     <footer>© 2025 부천교육지원청 특수학교고교학점제 전문적학습공동체</footer>
   </div>
-
 <script>
 /* ==== 데이터 ==== */
 /* SUBJECTS */
@@ -160,7 +151,6 @@ const SUBJECTS = [
     "음료 제조하기",
     "디저트 제조하기"
   ]},
-
   { id:"대인서비스", key:"care", colorFrom:"#dbeafe", colorTo:"#dcfce7", activities:[
     "인사 예절 배우기",
     "감정 표현 연습",
@@ -176,7 +166,6 @@ const SUBJECTS = [
     "손톱 관리 서비스 보조",
     "미용 보조(머리 감겨주기, 머리카락 청소 등)"
   ]},
-
   { id:"기초작업기술1", key:"tools", colorFrom:"#fef3c7", colorTo:"#ecfccb", activities:[
     "기준에 따라 물건 분류하기",
     "줄자로 길이 측정하기",
@@ -189,7 +178,6 @@ const SUBJECTS = [
     "망치와 장도리 사용법 알기",
     "전동드라이버 사용법 알기"
   ]},
-
   { id:"기초작업기술2", key:"box", colorFrom:"#ede9fe", colorTo:"#f5d0fe", activities:[
     "포장하기 (라벨 붙이기 포함)",
     "운반하기 (조심성 중요)",
@@ -205,7 +193,6 @@ const SUBJECTS = [
     "제과제빵 체험하기",
     "커피 제조하기"
   ]},
-
   { id:"농생명", key:"leaf", colorFrom:"#d1fae5", colorTo:"#a5f3fc", activities:[
     "화분 심기",
     "모종 심기",
@@ -218,7 +205,6 @@ const SUBJECTS = [
     "친환경 농축산물",
     "학교 텃밭·주말 농장·실내 정원 가꾸기"
   ]},
-
   { id:"정보처리", key:"laptop", colorFrom:"#bae6fd", colorTo:"#c7d2fe", activities:[
     "타자 연습",
     "문서 작성",
@@ -237,7 +223,6 @@ const SUBJECTS = [
     "드론으로 할 수 있는 일 체험하기",
     "코딩 로봇 프로그램 체험하기"
   ]},
-
   { id:"사무지원", key:"files", colorFrom:"#e5e7eb", colorTo:"#e7e5e4", activities:[
     "복사기 사용",
     "문서 정리",
@@ -252,8 +237,6 @@ const SUBJECTS = [
     "민원인 응대하기"
   ]},
 ];
-
-/* 이미지 보유 장수 (한 장씩이면 전부 1로 유지 가능) */
 const IMAGE_COUNT = {
   leaf: 10,
   care: 12,
@@ -263,8 +246,6 @@ const IMAGE_COUNT = {
   laptop: 21,
   files: 11
 };
-
-/* 문구 → 파일코드 매핑 (문구와 완전히 동일해야 함) */
 const ACTIVITY_CODE = {
   food: {
     "손님 맞이 인사하기": "greet",
@@ -282,7 +263,6 @@ const ACTIVITY_CODE = {
     "음료 제조하기": "drink",
     "디저트 제조하기": "dessert"
   },
-
   care: {
     "인사 예절 배우기": "greeting",
     "감정 표현 연습": "emotion",
@@ -298,7 +278,6 @@ const ACTIVITY_CODE = {
     "손톱 관리 서비스 보조": "nailcare",
     "미용 보조(머리 감겨주기, 머리카락 청소 등)": "haircare"
   },
-
   tools: {
     "기준에 따라 물건 분류하기": "sort",
     "줄자로 길이 측정하기": "measurelength",
@@ -311,7 +290,6 @@ const ACTIVITY_CODE = {
     "망치와 장도리 사용법 알기": "hammer",
     "전동드라이버 사용법 알기": "electricdriver"
   },
-
   box: {
     "포장하기 (라벨 붙이기 포함)": "pack",
     "운반하기 (조심성 중요)": "carry",
@@ -327,7 +305,6 @@ const ACTIVITY_CODE = {
     "제과제빵 체험하기": "baking",
     "커피 제조하기": "coffee"
   },
-
   leaf: {
     "화분 심기": "plantpot",
     "모종 심기": "seedling",
@@ -340,7 +317,6 @@ const ACTIVITY_CODE = {
     "친환경 농축산물": "ecoagri",
     "학교 텃밭·주말 농장·실내 정원 가꾸기": "schoolfarm"
   },
-
   laptop: {
     "타자 연습": "typing",
     "문서 작성": "document",
@@ -359,7 +335,6 @@ const ACTIVITY_CODE = {
     "드론으로 할 수 있는 일 체험하기": "drone",
     "코딩 로봇 프로그램 체험하기": "codingrobot"
   },
-
   files: {
     "복사기 사용": "copy",
     "문서 정리": "document",
@@ -374,8 +349,6 @@ const ACTIVITY_CODE = {
     "민원인 응대하기": "customer"
   }
 };
-
-/* 각 코드별 이미지 장수 (한 장이면 전부 1) */
 const ACTIVITY_COUNT = {
   food: {
     greet: 1, order: 1, table: 1, serve: 1, utensil: 1, appliance: 1,
@@ -411,7 +384,6 @@ const ACTIVITY_COUNT = {
     booksort: 1, customer: 1
   }
 };
-
 function randomImageFor(key){
   const n = IMAGE_COUNT[key] || 10;          // 과목별 보유 장수
   const i = Math.floor(Math.random() * n) + 1; // 1..n
@@ -445,7 +417,6 @@ function imageFor(key, activity){
   return randomImageFor(key);                         // 과목 랜덤(백업)
 }
   const TOTAL_ROUNDS = 30;
-
 /* ==== 공통 ==== */
 const $ = s => document.querySelector(s);
 function randPick(a){ return a[Math.floor(Math.random()*a.length)]; }
@@ -457,14 +428,11 @@ function makeRounds(n=TOTAL_ROUNDS){
     rs.push({ a:{...a, highlight:randPick(a.activities)}, b:{...b, highlight:randPick(b.activities)} });
   } return rs;
 }
-
 /* ==== 학생 정보 ==== */
 let student={school:"",grade:"",name:""};
 function saveStudent(){ student.school=$('#school')?.value?.trim()||""; student.grade=$('#grade')?.value?.trim()||""; student.name=$('#name')?.value?.trim()||""; localStorage.setItem("worldcup_student_v4", JSON.stringify(student)); }
 function loadStudent(){ try{ const s=JSON.parse(localStorage.getItem("worldcup_student_v4")||"{}"); student=Object.assign({school:"",grade:"",name:""},s); if($('#school')) $('#school').value=student.school; if($('#grade')) $('#grade').value=student.grade; if($('#name')) $('#name').value=student.name; }catch(e){} }
 function updateStudentMeta(){ const t=[student.school,student.grade,student.name].filter(Boolean).join(" · "); $('#studentMeta').textContent = t ? `학생정보: ${t}` : "학생정보: (미입력)"; }
-
-/* ==== 아이콘 (이미지 성공→이미지, 실패→SVG) ==== */
 function svgFallback(key){
   switch(key){
     case "leaf": return `<svg viewBox="0 0 100 100"><path d="M50 80c18-10 28-26 28-40-10-2-22 0-28 8-6-8-18-10-28-8 0 14 10 30 28 40z" fill="#86efac" stroke="#0f172a" stroke-width="2"/><path d="M50 48v32" stroke="#0f172a" stroke-width="2"/></svg>`;
@@ -480,8 +448,6 @@ function svgFallback(key){
 function choiceCard(d){
   const el = document.createElement('div');
   el.className = 'card';
-
-  // 템플릿에서 img src를 빼고 만들어 둔다
   el.innerHTML = `
     <div class="card-body">
       <div class="illus" style="background:${makeGradient(d.colorFrom,d.colorTo)}">
@@ -492,27 +458,18 @@ function choiceCard(d){
       </div>
       <div class="title">${d.highlight}</div>
     </div>`;
-
   const img = el.querySelector('img');
   const svg = el.querySelector('.svgwrap');
   const src = imageFor(d.key, d.highlight);
-
   const showImg = () => { img.style.display='block'; svg.style.display='none'; };
   const showSvg = () => { img.style.display='none';  svg.style.display='block'; };
-
   img.addEventListener('load', showImg);
   img.addEventListener('error', showSvg);
-
-  // 마지막에 src 지정 (캐시여도 load 안 놓치게)
   img.src = src;
-
-  // 이미 캐시 완료 상태면 즉시 표시
   if (img.complete && img.naturalWidth > 0) showImg();
-
   el.querySelector('.illus').addEventListener('click', ()=>choose(d.id));
   return el;
 }
-
 /* ==== 진행 로직 ==== */
 let rounds=[], step=0, scores=Object.fromEntries(SUBJECTS.map(s=>[s.id,0]));
 function renderStep(){
@@ -528,7 +485,6 @@ function choose(id){
   if(step+1>=TOTAL_ROUNDS){ finish(); }
   else { step++; renderStep(); }
 }
-
 /* ==== 결과 ==== */
 function finish(){
   showPage('page-result');
@@ -544,7 +500,6 @@ function finish(){
   });
   window.scrollTo(0,0);
 }
-
 /* ==== 네비/페이지 전환 ==== */
 function showPage(id){ ["page-start","page-info","page-game","page-result"].forEach(x=>document.getElementById(x).classList.add("hidden")); document.getElementById(id).classList.remove("hidden"); }
 $('#navStart').addEventListener('click', ()=>showPage('page-start'));
@@ -552,10 +507,8 @@ $('#navInfo').addEventListener('click', ()=>{ showPage('page-info'); loadStudent
 $('#navGame').addEventListener('click', ()=>{ showPage('page-game'); renderStep(); });
 $('#printBtn').addEventListener('click', ()=>window.print());
 $('#startToInfo').addEventListener('click', ()=>showPage('page-info'));
-$('#startToGame').addEventListener('click', ()=>{ showPage('page-game'); renderStep(); });
 $('#infoToGame').addEventListener('click', ()=>{ saveStudent(); showPage('page-game'); renderStep(); });
 $('#infoClear').addEventListener('click', ()=>{ ['school','grade','name'].forEach(id=>{ const i=document.getElementById(id); if(i) i.value=''; }); saveStudent(); });
-
 /* 결과화면 버튼 */
 $('#againBtn').addEventListener('click', ()=>{ scores=Object.fromEntries(SUBJECTS.map(s=>[s.id,0])); step=0; rounds=makeRounds(); showPage('page-game'); renderStep(); });
 $('#reshuffleBtn').addEventListener('click', ()=>{ scores=Object.fromEntries(SUBJECTS.map(s=>[s.id,0])); step=0; rounds=makeRounds(); showPage('page-game'); renderStep(); });
@@ -564,7 +517,6 @@ $('#downloadBtn').addEventListener('click', ()=>{
   const payload = { total: TOTAL_ROUNDS, scores, ranking: SUBJECTS.map(s=>({subject:s.id, score:scores[s.id]})).sort((a,b)=>b.score-a.score), student, timestamp: new Date().toISOString() };
   const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=`흥미결과_${new Date().toISOString().slice(0,10)}.json`; a.click(); URL.revokeObjectURL(url);
 });
-
 /* ==== 초기화 ==== */
 document.getElementById('roundTotal').textContent = TOTAL_ROUNDS;
 document.getElementById('stepMax').textContent   = TOTAL_ROUNDS;
@@ -572,10 +524,8 @@ loadStudent();
 showPage('page-start');
 </script>
 <script>
-  // 어디를 클릭하든 버블링으로 잡아서 처리
   document.addEventListener('click', (e) => {
     if (e.target.closest('#infoToGame')) {
-      // 학생정보 저장 → 게임화면 전환 → 라운드 렌더
       try { saveStudent(); } catch {}
       try { showPage('page-game'); } catch {}
       try { renderStep(); } catch {}
@@ -587,6 +537,30 @@ showPage('page-start');
       });
       try { saveStudent(); } catch {}
     }
+  });
+   /* ==== 초기화 ==== */
+  document.getElementById('roundTotal').textContent = TOTAL_ROUNDS;
+  document.getElementById('stepMax').textContent   = TOTAL_ROUNDS;
+  loadStudent();
+  showPage('page-start');
+
+  /* ==== 버튼 클릭 이벤트 ==== */
+  document.getElementById('startToInfo')?.addEventListener('click', () => {
+    showPage('page-info');
+  });
+
+  document.getElementById('infoToGame')?.addEventListener('click', () => {
+    saveStudent();
+    showPage('page-game');
+    renderStep();
+  });
+
+  document.getElementById('infoClear')?.addEventListener('click', () => {
+    ['school', 'grade', 'name'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    saveStudent();
   });
 </script>
 </body>
