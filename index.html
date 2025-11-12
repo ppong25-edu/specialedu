@@ -554,5 +554,41 @@ document.getElementById('stepMax').textContent   = TOTAL_ROUNDS;
 loadStudent();
 showPage('page-start');
 </script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const $ = (id) => document.getElementById(id);
+  const show = (id) => {
+    document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+    $(id).classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // 페이지 섹션 id는 실제 것과 맞춰 수정
+  const pageStart = 'page-start';
+  const pageInfo  = 'page-info';
+  const pageGame  = 'page-game';   // ← 실제 게임 섹션 id로 바꿔줘
+
+  // 1) 시작 -> 정보입력
+  $('startToInfo')?.addEventListener('click', () => show(pageInfo));
+
+  // 2) 정보입력 -> 게임 화면
+  $('infoToGame')?.addEventListener('click', () => {
+    // (선택) 유효성 검사
+    // if (!$('school').value || !$('grade').value || !$('name').value) return alert('모두 입력해 주세요!');
+    show(pageGame);
+  });
+
+  // 3) 다시 입력(초기화)
+  $('infoClear')?.addEventListener('click', () => {
+    ['school','grade','name'].forEach(id => { const el=$(id); if (el) el.value=''; });
+    // 깔끔하게 포커스 주기
+    $('school')?.focus();
+  });
+
+  // 초기엔 시작 화면만 보이게
+  show(pageStart);
+});
+</script>
+
 </body>
 </html>
