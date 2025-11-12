@@ -94,7 +94,7 @@
       <p>반가워요! 지금부터 재미있는 선택과목 찾기 게임을 해볼 거예요!<br> 두 가지 그림이 나와요.<br> 그중에 내가 더 좋아하거나 해보고 싶은 것을 선택해보세요.<br>
       총 <b><span id="roundTotal">30</span>문항</b>이예요. 다하면 내가 어떤 과목을 잘할 지 알 수 있어요! 자신있죠? <br><br> 자 이제 시작해봅시다. </p>
       <div class="cta">
-        <button class="btn primary" id="startToInfo">게임 시작</button>
+        <button class="btn primary" id="startToInfo" type="button">게임 시작</button>
       </div>
     </section>
 
@@ -108,8 +108,8 @@
           <div><label for="name">성명</label><input id="name"/></div>
         </div>
         <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
-          <button class="btn primary" id="infoToGame">게임 시작</button>
-          <button class="btn" id="infoClear">다시 입력</button>
+          <button class="btn primary" id="infoToGame" type="button" >게임 시작</button>
+          <button class="btn" id="infoClear"type="button">다시 입력</button>
         </div>
       </div>
     </section>
@@ -571,48 +571,5 @@ document.getElementById('stepMax').textContent   = TOTAL_ROUNDS;
 loadStudent();
 showPage('page-start');
 </script>
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const $ = (id) => document.getElementById(id);
-
-  // 라우트 섹션만 숨김/표시
-  const show = (id, onshow) => {
-    document.querySelectorAll('section.route').forEach(s => s.classList.add('hidden'));
-    const el = document.getElementById(id);
-    if (el) {
-      el.classList.remove('hidden');
-      // 보여준 뒤에 렌더/리사이즈 트리거
-      if (typeof onshow === 'function') onshow();
-      requestAnimationFrame(() => window.dispatchEvent(new Event('resize')));
-    }
-  };
-
-  // 섹션 ID들 (실제 ID와 꼭 맞추기)
-  const START = 'page-start';
-  const INFO  = 'page-info';
-  const GAME  = 'page-game';
-
-  // 버튼 이벤트
-  document.getElementById('startToInfo')?.addEventListener('click', () => show(INFO));
-
-  document.getElementById('infoToGame')?.addEventListener('click', () => {
-    // TODO: 유효성 검사 필요하면 여기서
-    show(GAME, () => {
-      // 게임 라운드/카드 렌더를 "보여준 뒤"에 호출
-      if (typeof renderRound === 'function') renderRound();
-    });
-  });
-
-  document.getElementById('infoClear')?.addEventListener('click', () => {
-    ['school','grade','name'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
-    document.getElementById('school')?.focus();
-  });
-
-  // 초기 진입
-  show(START);
-});
-</script>
-
-
 </body>
 </html>
