@@ -528,6 +528,7 @@ function finish(){
       <ul style="margin:0; padding-left:18px; font-size:13px;">${r.subject.activities.slice(0,4).map(a=>`<li>${a}</li>`).join('')}</ul>`;
     grid.appendChild(div);
   });
+   playFinishSound(); 
   window.scrollTo(0,0);
 }
 /* ==== 네비/페이지 전환 ==== */
