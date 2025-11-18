@@ -508,23 +508,32 @@ function finish(){
   window.scrollTo(0,0);
 }
 /* ==== 네비/페이지 전환 ==== */
-function showPage(id){ ["page-start","page-info","page-game","page-result"].forEach(x=>document.getElementById(x).classList.add("hidden")); document.getElementById(id).classList.remove("hidden"); 
-  /* 🎵 결과 페이지에서 음악 재생 */
-  if (id === "page-result") {
-    const music = document.getElementById("finishSound");
-    if (music) {
-      music.currentTime = 0;   // 처음부터 재생
-      music.play().catch(()=>{});
-    }
-  } else {
-    /* 🎵 다른 페이지로 넘어가면 음악 자동 중지 */
-    const music = document.getElementById("finishSound");
-    if (music) {
-      music.pause();
-      music.currentTime = 0;
-    }
+function showPage(id) {
+  ["page-start","page-info","page-game","page-result"]
+    .forEach(x => document.getElementById(x).classList.add("hidden"));
+  
+  document.getElementById(id).classList.remove("hidden");
+
+  const startSound = document.getElementById("startSound");
+  const finishSound = document.getElementById("finishSound");
+
+  /* 🎵 페이지별 BGM 제어 */
+  if (id === "page-start") {
+    // 시작화면 음악 ON
+    if (finishSound) { finishSound.pause(); finishSound.currentTime = 0; }
+    if (startSound) { startSound.currentTime = 0; startSound.play().catch(()=>{}); }
   }
-}  
+  else if (id === "page-result") {
+    // 결과 화면 음악 ON
+    if (startSound) { startSound.pause(); startSound.currentTime = 0; }
+    if (finishSound) { finishSound.currentTime = 0; finishSound.play().catch(()=>{}); }
+  }
+  else {
+    // 그 외 화면에서는 모든 음악 OFF
+    if (startSound) { startSound.pause(); startSound.currentTime = 0; }
+    if (finishSound) { finishSound.pause(); finishSound.currentTime = 0; }
+  }
+}
 $('#navStart').addEventListener('click', ()=>showPage('page-start'));
 $('#navInfo').addEventListener('click', ()=>{ showPage('page-info'); loadStudent(); });
 $('#navGame').addEventListener('click', ()=>{ showPage('page-game'); renderStep(); });
