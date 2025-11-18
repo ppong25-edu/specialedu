@@ -531,12 +531,17 @@ loadStudent();
 showPage('page-start');
 </script>
 <script>
+  /* ==== 공통 클릭 이벤트 ==== */
   document.addEventListener('click', (e) => {
+
+    /* 정보입력 → 본게임 */
     if (e.target.closest('#infoToGame')) {
       try { saveStudent(); } catch {}
       try { showPage('page-game'); } catch {}
       try { renderStep(); } catch {}
     }
+
+    /* 정보 초기화 */
     if (e.target.closest('#infoClear')) {
       ['school','grade','name'].forEach(id => {
         const el = document.getElementById(id);
@@ -544,8 +549,15 @@ showPage('page-start');
       });
       try { saveStudent(); } catch {}
     }
+
+    /* 🎵 카드 클릭하면 효과음 재생 */
+    if (e.target.closest('.card')) {
+      const sound = document.getElementById('clickSound');
+      if (sound) sound.play().catch(()=>{});
+    }
   });
-   /* ==== 초기화 ==== */
+
+  /* ==== 초기화 ==== */
   document.getElementById('roundTotal').textContent = TOTAL_ROUNDS;
   document.getElementById('stepMax').textContent   = TOTAL_ROUNDS;
   loadStudent();
@@ -569,7 +581,9 @@ showPage('page-start');
     });
     saveStudent();
   });
-<audio id="clickSound" src="sounds/click.mp3" preload="auto"></audio>  
 </script>
+
+<!-- 🎵 오디오 태그는 반드시 script 밖! -->
+<audio id="clickSound" src="sounds/click.mp3" preload="auto"></audio>
 </body>
 </html>
