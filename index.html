@@ -641,26 +641,30 @@ showPage('page-start');
   });
 
   /* ==== 사운드 토글 ==== */
-  const soundBtn    = document.getElementById('soundToggle');
-  const startSound  = document.getElementById('startSound');
-  const finishSound = document.getElementById('finishSound');
+const soundBtn = document.getElementById('soundToggle');
+const startSound = document.getElementById('startSound');
+const finishSound = document.getElementById('finishSound');
 
-  if (soundBtn) {
-    soundBtn.addEventListener('click', () => {
-      soundEnabled = !soundEnabled;
+let soundEnabled = false;  // 기본은 OFF (소리 안남)
 
-      if (soundEnabled) {
-        soundBtn.textContent = "🔊 사운드 ON";
-        if (startSound) {
-          startSound.currentTime = 0;
-          startSound.play().catch(() => {});
-        }
-      } else {
-        soundBtn.textContent = "🔇 사운드 OFF";
-        startSound?.pause();
-        finishSound?.pause();
-      }
-    });
+// 초기 버튼 표시
+soundBtn.textContent = "🔊 사운드 ON"; // 누르면 소리 켜짐
+
+soundBtn.addEventListener('click', () => {
+  soundEnabled = !soundEnabled;
+
+  if (soundEnabled) {
+    // 소리 켜짐 → 버튼은 “사운드 OFF(누르면 꺼짐)”로 보여야 함
+    soundBtn.textContent = "🔇 사운드 OFF";
+    startSound.currentTime = 0;
+    startSound.play().catch(()=>{});
+  } else {
+    // 소리 꺼짐 → 버튼은 “사운드 ON(누르면 켜짐)”로 보여야 함
+    soundBtn.textContent = "🔊 사운드 ON";
+    startSound.pause();
+    finishSound.pause();
+  }
+});
   }
 </script>
 
