@@ -508,7 +508,23 @@ function finish(){
   window.scrollTo(0,0);
 }
 /* ==== 네비/페이지 전환 ==== */
-function showPage(id){ ["page-start","page-info","page-game","page-result"].forEach(x=>document.getElementById(x).classList.add("hidden")); document.getElementById(id).classList.remove("hidden"); }
+function showPage(id){ ["page-start","page-info","page-game","page-result"].forEach(x=>document.getElementById(x).classList.add("hidden")); document.getElementById(id).classList.remove("hidden"); 
+  /* 🎵 결과 페이지에서 음악 재생 */
+  if (id === "page-result") {
+    const music = document.getElementById("finishSound");
+    if (music) {
+      music.currentTime = 0;   // 처음부터 재생
+      music.play().catch(()=>{});
+    }
+  } else {
+    /* 🎵 다른 페이지로 넘어가면 음악 자동 중지 */
+    const music = document.getElementById("finishSound");
+    if (music) {
+      music.pause();
+      music.currentTime = 0;
+    }
+  }
+}  
 $('#navStart').addEventListener('click', ()=>showPage('page-start'));
 $('#navInfo').addEventListener('click', ()=>{ showPage('page-info'); loadStudent(); });
 $('#navGame').addEventListener('click', ()=>{ showPage('page-game'); renderStep(); });
@@ -585,5 +601,6 @@ showPage('page-start');
 
 <!-- 🎵 오디오 태그는 반드시 script 밖! -->
 <audio id="clickSound" src="sounds/click.mp3" preload="auto"></audio>
+<audio id="finishSound" src="sounds/finish.mp3" preload="auto" loop></audio> 
 </body>
 </html>
