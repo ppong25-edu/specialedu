@@ -580,6 +580,18 @@ loadStudent();
 showPage('page-start');
 </script>
 <script>
+  /* ==== 사운드 상태 ==== */
+  let soundEnabled = false;   // 기본 OFF
+
+  /* 공용: 클릭 효과음 재생 함수 */
+  function playClickSound() {
+    if (!soundEnabled) return;                 // 사운드 OFF면 재생 X
+    const sound = document.getElementById('clickSound');
+    if (!sound) return;
+    sound.currentTime = 0;
+    sound.play().catch(() => {});
+  }
+
   /* ==== 공통 클릭 이벤트 ==== */
   document.addEventListener('click', (e) => {
 
@@ -601,8 +613,7 @@ showPage('page-start');
 
     /* 🎵 카드 클릭하면 효과음 재생 */
     if (e.target.closest('.card')) {
-      const sound = document.getElementById('clickSound');
-      if (sound) sound.play().catch(()=>{});
+      playClickSound();
     }
   });
 
@@ -630,26 +641,29 @@ showPage('page-start');
     });
     saveStudent();
   });
-/* ==== 사운드 토글 ==== */
-const soundBtn = document.getElementById('soundToggle');
-const startSound = document.getElementById('startSound');
-const finishSound = document.getElementById('finishSound');
 
-let soundEnabled = false;  // 기본 OFF
+  /* ==== 사운드 토글 ==== */
+  const soundBtn    = document.getElementById('soundToggle');
+  const startSound  = document.getElementById('startSound');
+  const finishSound = document.getElementById('finishSound');
 
-soundBtn.addEventListener('click', () => {
-  soundEnabled = !soundEnabled;
+  if (soundBtn) {
+    soundBtn.addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
 
-  if (soundEnabled) {
-    soundBtn.textContent = "🔊 사운드 ON";
-    startSound.currentTime = 0;
-    startSound.play().catch(()=>{});
-  } else {
-    soundBtn.textContent = "🔇 사운드 OFF";
-    startSound.pause();
-    finishSound.pause();
+      if (soundEnabled) {
+        soundBtn.textContent = "🔊 사운드 ON";
+        if (startSound) {
+          startSound.currentTime = 0;
+          startSound.play().catch(() => {});
+        }
+      } else {
+        soundBtn.textContent = "🔇 사운드 OFF";
+        startSound?.pause();
+        finishSound?.pause();
+      }
+    });
   }
-});  
 </script>
 
 <!-- 🎵 오디오 태그는 반드시 script 밖! -->
