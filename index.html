@@ -68,6 +68,22 @@
   gap: 12px;             /* 버튼 간 간격 */
   justify-content: center; /* 버튼 묶음 가운데 정렬 */
 }
+  .sound-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: white;
+  border: 1px solid #d1d5db;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 15px;
+  cursor: pointer;
+  z-index: 9999;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+}
+.sound-btn:hover {
+  background: #f3f4f6;
+}
 </style>
 <link href="https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2310@1.0/HSBombaram2.0.css" rel="stylesheet">
 <style>
@@ -80,6 +96,13 @@
 <body>
   <div class="container">
     <header>
+   <!-- 🔊 사운드 토글 버튼 -->
+<button id="soundToggle" class="sound-btn">🔇 사운드 OFF</button>
+
+<!-- 시작 배경음 -->
+<audio id="startSound" src="sounds/start.mp3" loop preload="auto"></audio>
+<!-- 결과 배경음 -->
+<audio id="finishSound" src="sounds/finish.mp3" preload="auto"></audio>   
       <div>
         <h1>선택과목 찾기</h1>
         <div class="muted">나에게 맞는 선택과목을 알아봅시다.</div>
@@ -516,7 +539,6 @@ function showPage(id) {
 
   const startSound = document.getElementById("startSound");
   const finishSound = document.getElementById("finishSound");
-
   /* 🎵 페이지별 BGM 제어 */
   if (id === "page-start") {
     // 시작화면 음악 ON
@@ -606,6 +628,26 @@ showPage('page-start');
     });
     saveStudent();
   });
+/* ==== 사운드 토글 ==== */
+const soundBtn = document.getElementById('soundToggle');
+const startSound = document.getElementById('startSound');
+const finishSound = document.getElementById('finishSound');
+
+let soundEnabled = false;  // 기본 OFF
+
+soundBtn.addEventListener('click', () => {
+  soundEnabled = !soundEnabled;
+
+  if (soundEnabled) {
+    soundBtn.textContent = "🔊 사운드 ON";
+    startSound.currentTime = 0;
+    startSound.play().catch(()=>{});
+  } else {
+    soundBtn.textContent = "🔇 사운드 OFF";
+    startSound.pause();
+    finishSound.pause();
+  }
+});  
 </script>
 
 <!-- 🎵 오디오 태그는 반드시 script 밖! -->
