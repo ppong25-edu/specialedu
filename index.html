@@ -501,6 +501,20 @@ function choiceCard(d){
 }
 /* ==== 진행 로직 ==== */
 let rounds=[], step=0, scores=Object.fromEntries(SUBJECTS.map(s=>[s.id,0]));
+  function resetGameState() {
+  // 점수, 진행 단계, 라운드(카드 순서) 전부 초기화
+  scores = Object.fromEntries(SUBJECTS.map(s => [s.id, 0]));
+  step = 0;
+  rounds = makeRounds();
+
+  // 진행바 / 진행도 표시도 0으로
+  const p = document.getElementById('progress');
+  if (p) p.value = 0;
+
+  const sn = document.getElementById('stepNow');
+  if (sn) sn.textContent = '0';
+}
+
 function renderStep(){
   if(!rounds.length) rounds=makeRounds();
   $('#stepNow').textContent = step;
