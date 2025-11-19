@@ -671,13 +671,16 @@ showPage('page-start');
     soundBtn.addEventListener('click', () => {
       soundEnabled = !soundEnabled;
 
-      if (soundEnabled) {
-        // 소리 켜짐 → 버튼엔 "OFF" (누르면 꺼짐)
-        soundBtn.textContent = "🔇 사운드 OFF";
-        if (startSound) {
-          startSound.currentTime = 0;
-          startSound.play().catch(()=>{});
-        }
+     if (soundEnabled) {
+  soundBtn.textContent = "🔇 사운드 OFF";
+
+  // ⭐ 현재 화면이 시작화면일 때만 시작음 재생
+  const startPage = document.getElementById('page-start');
+  if (startPage && !startPage.classList.contains('hidden')) {
+    startSound.currentTime = 0;
+    startSound.play().catch(()=>{});
+  }
+}
       } else {
         // 소리 꺼짐 → 버튼엔 "ON" (누르면 켜짐)
         soundBtn.textContent = "🔊 사운드 ON";
