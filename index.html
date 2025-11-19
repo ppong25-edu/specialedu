@@ -100,7 +100,7 @@
 <!-- 시작 배경음 -->
 <audio id="startSound" src="sounds/start.mp3" loop preload="auto"></audio>
 <!-- 결과 배경음 -->
-<audio id="finishSound" src="sounds/finish.mp3" preload="auto"></audio>   
+<audio id="finishSound" src="sounds/finish.mp3" loop preload="auto"></audio>   
       <div>
         <h1>선택과목 찾기</h1>
         <div class="muted">나에게 맞는 선택과목을 알아봅시다.</div>
@@ -266,6 +266,7 @@ const SUBJECTS = [
     "민원인 응대하기"
   ]},
 ];
+
 const IMAGE_COUNT = {
   leaf: 10,
   care: 12,
@@ -275,6 +276,7 @@ const IMAGE_COUNT = {
   laptop: 21,
   files: 11
 };
+
 const ACTIVITY_CODE = {
   food: {
     "손님 맞이 인사하기": "greet",
@@ -378,6 +380,7 @@ const ACTIVITY_CODE = {
     "민원인 응대하기": "customer"
   }
 };
+
 const ACTIVITY_COUNT = {
   food: {
     greet: 1, order: 1, table: 1, serve: 1, utensil: 1, appliance: 1,
@@ -413,15 +416,24 @@ const ACTIVITY_COUNT = {
     booksort: 1, customer: 1
   }
 };
+
+const TOTAL_ROUNDS = 30;
+
+/* ==== 공통 유틸 ==== */
+const $ = s => document.querySelector(s);
+function randPick(a){ return a[Math.floor(Math.random()*a.length)]; }
+
 function randomImageFor(key){
-  const n = IMAGE_COUNT[key] || 10;          // 과목별 보유 장수
-  const i = Math.floor(Math.random() * n) + 1; // 1..n
-  const name = String(i).padStart(2, '0');     // 01,02...
-  return `images/${key}_${name}.png`;          // 예: images/leaf_03.png
+  const n = IMAGE_COUNT[key] || 10;
+  const i = Math.floor(Math.random() * n) + 1;
+  const name = String(i).padStart(2, '0');
+  return `images/${key}_${name}.png`;
 }
+
 function normalize(s){
   return s.replace(/\s+/g,'').replace(/[()]/g,'').replace(/[·&]/g,'').trim();
 }
+
 function resolveActivityCode(key, activity){
   const table = ACTIVITY_CODE[key];
   if(!table) return null;
@@ -435,33 +447,44 @@ function resolveActivityCode(key, activity){
   }
   return null;
 }
+
 function imageFor(key, activity){
   const code = resolveActivityCode(key, activity);
   if (code) {
     const n = (ACTIVITY_COUNT[key] && ACTIVITY_COUNT[key][code]) || 1;
     const i = Math.floor(Math.random() * n) + 1;
     const name = String(i).padStart(2,'0');
-    return `images/${key}_${code}_${name}.png`;       // 활동별 파일
+    return `images/${key}_${code}_${name}.png`;
   }
-  return randomImageFor(key);                         // 과목 랜덤(백업)
+  return randomImageFor(key);
 }
-  const TOTAL_ROUNDS = 30;
-/* ==== 공통 ==== */
-const $ = s => document.querySelector(s);
-function randPick(a){ return a[Math.floor(Math.random()*a.length)]; }
-function makeGradient(a,b){ return `linear-gradient(135deg, ${a}, ${b})`; }
-function makeRounds(n=TOTAL_ROUNDS){
-  const rs=[]; for(let i=0;i<n;i++){
-    let a=randPick(SUBJECTS), b=randPick(SUBJECTS);
-    while(b.id===a.id) b=randPick(SUBJECTS);
-    rs.push({ a:{...a, highlight:randPick(a.activities)}, b:{...b, highlight:randPick(b.activities)} });
-  } return rs;
-}
+
 /* ==== 학생 정보 ==== */
 let student={school:"",grade:"",name:""};
-function saveStudent(){ student.school=$('#school')?.value?.trim()||""; student.grade=$('#grade')?.value?.trim()||""; student.name=$('#name')?.value?.trim()||""; localStorage.setItem("worldcup_student_v4", JSON.stringify(student)); }
-function loadStudent(){ try{ const s=JSON.parse(localStorage.getItem("worldcup_student_v4")||"{}"); student=Object.assign({school:"",grade:"",name:""},s); if($('#school')) $('#school').value=student.school; if($('#grade')) $('#grade').value=student.grade; if($('#name')) $('#name').value=student.name; }catch(e){} }
-function updateStudentMeta(){ const t=[student.school,student.grade,student.name].filter(Boolean).join(" · "); $('#studentMeta').textContent = t ? `학생정보: ${t}` : "학생정보: (미입력)"; }
+
+function saveStudent(){
+  student.school=$('#school')?.value?.trim()||"";
+  student.grade=$('#grade')?.value?.trim()||"";
+  student.name=$('#name')?.value?.trim()||"";
+  localStorage.setItem("worldcup_student_v4", JSON.stringify(student));
+}
+
+function loadStudent(){
+  try{
+    const s=JSON.parse(localStorage.getItem("worldcup_student_v4")||"{}");
+    student=Object.assign({school:"",grade:"",name:""},s);
+    if($('#school')) $('#school').value=student.school;
+    if($('#grade')) $('#grade').value=student.grade;
+    if($('#name')) $('#name').value=student.name;
+  }catch(e){}
+}
+
+function updateStudentMeta(){
+  const t=[student.school,student.grade,student.name].filter(Boolean).join(" · ");
+  $('#studentMeta').textContent = t ? `학생정보: ${t}` : "학생정보: (미입력)";
+}
+
+/* ==== SVG Fallback ==== */
 function svgFallback(key){
   switch(key){
     case "leaf": return `<svg viewBox="0 0 100 100"><path d="M50 80c18-10 28-26 28-40-10-2-22 0-28 8-6-8-18-10-28-8 0 14 10 30 28 40z" fill="#86efac" stroke="#0f172a" stroke-width="2"/><path d="M50 48v32" stroke="#0f172a" stroke-width="2"/></svg>`;
@@ -474,12 +497,14 @@ function svgFallback(key){
     default: return `<svg viewBox="0 0 100 100"><rect width="100" height="100" fill="#fff"/></svg>`;
   }
 }
+
+/* ==== 카드 생성 ==== */
 function choiceCard(d){
   const el = document.createElement('div');
   el.className = 'card';
   el.innerHTML = `
     <div class="card-body">
-      <div class="illus" style="background:${makeGradient(d.colorFrom,d.colorTo)}">
+      <div class="illus">
         <div class="wrap">
           <img alt="${d.key}">
           <div class="svgwrap">${svgFallback(d.key)}</div>
@@ -487,27 +512,37 @@ function choiceCard(d){
       </div>
       <div class="title">${d.highlight}</div>
     </div>`;
+
   const img = el.querySelector('img');
   const svg = el.querySelector('.svgwrap');
   const src = imageFor(d.key, d.highlight);
+
   const showImg = () => { img.style.display='block'; svg.style.display='none'; };
   const showSvg = () => { img.style.display='none';  svg.style.display='block'; };
+
   img.addEventListener('load', showImg);
   img.addEventListener('error', showSvg);
   img.src = src;
   if (img.complete && img.naturalWidth > 0) showImg();
-  el.querySelector('.illus').addEventListener('click', ()=>choose(d.id));
+
+  el.querySelector('.illus').addEventListener('click', ()=>{
+    playClickSound();
+    choose(d.id);
+  });
+
   return el;
 }
+
 /* ==== 진행 로직 ==== */
-let rounds=[], step=0, scores=Object.fromEntries(SUBJECTS.map(s=>[s.id,0]));
-  function resetGameState() {
-  // 점수, 진행 단계, 라운드(카드 순서) 전부 초기화
+let rounds = [];
+let step   = 0;
+let scores = Object.fromEntries(SUBJECTS.map(s=>[s.id,0]));
+
+function resetGameState() {
   scores = Object.fromEntries(SUBJECTS.map(s => [s.id, 0]));
-  step = 0;
+  step   = 0;
   rounds = makeRounds();
 
-  // 진행바 / 진행도 표시도 0으로
   const p = document.getElementById('progress');
   if (p) p.value = 0;
 
@@ -515,187 +550,197 @@ let rounds=[], step=0, scores=Object.fromEntries(SUBJECTS.map(s=>[s.id,0]));
   if (sn) sn.textContent = '0';
 }
 
+function makeRounds(n=TOTAL_ROUNDS){
+  const rs=[];
+  for(let i=0;i<n;i++){
+    let a=randPick(SUBJECTS), b=randPick(SUBJECTS);
+    while(b.id===a.id) b=randPick(SUBJECTS);
+    rs.push({
+      a:{...a, highlight:randPick(a.activities)},
+      b:{...b, highlight:randPick(b.activities)}
+    });
+  }
+  return rs;
+}
+
 function renderStep(){
   if(!rounds.length) rounds=makeRounds();
   $('#stepNow').textContent = step;
   $('#progress').value = step;
-  const cur = rounds[step], box = $('#choices'); box.innerHTML='';
+  const cur = rounds[step];
+  const box = $('#choices');
+  box.innerHTML='';
   box.appendChild(choiceCard(cur.a));
   box.appendChild(choiceCard(cur.b));
 }
+
 function choose(id){
   scores[id]=(scores[id]||0)+1;
   if(step+1>=TOTAL_ROUNDS){ finish(); }
   else { step++; renderStep(); }
 }
+
 /* ==== 결과 ==== */
 function finish(){
   showPage('page-result');
   updateStudentMeta();
-  const ranking = SUBJECTS.map(s=>({subject:s, score:scores[s.id]})).sort((a,b)=>b.score-a.score);
-  const grid = $('#rankGrid'); grid.innerHTML='';
+  const ranking = SUBJECTS
+    .map(s=>({subject:s, score:scores[s.id]}))
+    .sort((a,b)=>b.score-a.score);
+
+  const grid = $('#rankGrid');
+  grid.innerHTML='';
+
   ranking.forEach((r,i)=>{
-    const div=document.createElement('div'); div.className='badge';
+    const div=document.createElement('div');
+    div.className='badge';
     const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
-    div.innerHTML = `<h4><span class="rank">${i+1}위</span> ${medal} ${r.subject.id} <span class="muted">(${r.score}점)</span></h4>
-      <ul style="margin:0; padding-left:18px; font-size:13px;">${r.subject.activities.slice(0,4).map(a=>`<li>${a}</li>`).join('')}</ul>`;
+    div.innerHTML = `
+      <h4>
+        <span class="rank">${i+1}위</span> ${medal} ${r.subject.id}
+        <span class="muted">(${r.score}점)</span>
+      </h4>
+      <ul style="margin:0; padding-left:18px; font-size:13px;">
+        ${r.subject.activities.slice(0,4).map(a=>`<li>${a}</li>`).join('')}
+      </ul>`;
     grid.appendChild(div);
   });
-   playFinishSound(); 
+
   window.scrollTo(0,0);
 }
-/* ==== 네비/페이지 전환 ==== */
+
+/* ==== 사운드 & 페이지 전환 ==== */
+let soundEnabled = false;         // 기본은 OFF
+let currentPage  = 'page-start';  // 현재 페이지 id
+
+function playClickSound() {
+  if (!soundEnabled) return;
+  const sound = document.getElementById('clickSound');
+  if (!sound) return;
+  sound.currentTime = 0;
+  sound.play().catch(()=>{});
+}
+
+function updateBgmForPage() {
+  const startSound  = document.getElementById('startSound');
+  const finishSound = document.getElementById('finishSound');
+  if (!startSound || !finishSound) return;
+
+  // 사운드 OFF면 모든 BGM 정지
+  if (!soundEnabled) {
+    [startSound, finishSound].forEach(a=>{
+      a.pause();
+      a.currentTime = 0;
+    });
+    return;
+  }
+
+  if (currentPage === "page-start") {
+    finishSound.pause(); finishSound.currentTime = 0;
+    startSound.currentTime = 0;
+    startSound.play().catch(()=>{});
+  } else if (currentPage === "page-result") {
+    startSound.pause(); startSound.currentTime = 0;
+    finishSound.currentTime = 0;
+    finishSound.play().catch(()=>{});
+  } else {
+    // 게임/정보 입력 화면에서는 BGM 없음
+    startSound.pause();  startSound.currentTime  = 0;
+    finishSound.pause(); finishSound.currentTime = 0;
+  }
+}
+
 function showPage(id) {
   ["page-start","page-info","page-game","page-result"]
     .forEach(x => document.getElementById(x).classList.add("hidden"));
-  
   document.getElementById(id).classList.remove("hidden");
-
-  const startSound = document.getElementById("startSound");
-  const finishSound = document.getElementById("finishSound");
-  /* 🎵 페이지별 BGM 제어 */
-  if (id === "page-start") {
-    // 시작화면 음악 ON
-    if (finishSound) { finishSound.pause(); finishSound.currentTime = 0; }
-    if (startSound) { startSound.currentTime = 0; startSound.play().catch(()=>{}); }
-  }
-  else if (id === "page-result") {
-    // 결과 화면 음악 ON
-    if (startSound) { startSound.pause(); startSound.currentTime = 0; }
-    if (finishSound) { finishSound.currentTime = 0; finishSound.play().catch(()=>{}); }
-  }
-  else {
-    // 그 외 화면에서는 모든 음악 OFF
-    if (startSound) { startSound.pause(); startSound.currentTime = 0; }
-    if (finishSound) { finishSound.pause(); finishSound.currentTime = 0; }
-  }
+  currentPage = id;
+  updateBgmForPage();
 }
+
+/* ==== 네비게이션 버튼 ==== */
 $('#navStart').addEventListener('click', () => {
-  resetGameState();        // ← 상태 싹 리셋
-  showPage('page-start');  // ← 화면만 처음 페이지로
+  resetGameState();
+  showPage('page-start');
 });
+
 $('#navInfo').addEventListener('click', ()=>{ showPage('page-info'); loadStudent(); });
 $('#navGame').addEventListener('click', ()=>{ showPage('page-game'); renderStep(); });
 $('#printBtn').addEventListener('click', ()=>window.print());
+
 $('#startToInfo').addEventListener('click', ()=>showPage('page-info'));
-$('#infoToGame').addEventListener('click', ()=>{ saveStudent(); showPage('page-game'); renderStep(); });
-$('#infoClear').addEventListener('click', ()=>{ ['school','grade','name'].forEach(id=>{ const i=document.getElementById(id); if(i) i.value=''; }); saveStudent(); });
+$('#infoToGame').addEventListener('click', ()=>{
+  saveStudent();
+  resetGameState();
+  showPage('page-game');
+  renderStep();
+});
+$('#infoClear').addEventListener('click', ()=>{
+  ['school','grade','name'].forEach(id=>{
+    const i=document.getElementById(id);
+    if(i) i.value='';
+  });
+  saveStudent();
+});
+
 /* 결과화면 버튼 */
-$('#againBtn').addEventListener('click', ()=>{ scores=Object.fromEntries(SUBJECTS.map(s=>[s.id,0])); step=0; rounds=makeRounds(); showPage('page-game'); renderStep(); });
-$('#reshuffleBtn').addEventListener('click', ()=>{ scores=Object.fromEntries(SUBJECTS.map(s=>[s.id,0])); step=0; rounds=makeRounds(); showPage('page-game'); renderStep(); });
+$('#againBtn').addEventListener('click', ()=>{
+  resetGameState();
+  showPage('page-game');
+  renderStep();
+});
+$('#reshuffleBtn').addEventListener('click', ()=>{
+  resetGameState();
+  showPage('page-game');
+  renderStep();
+});
 $('#printBtn2').addEventListener('click', ()=>window.print());
 $('#downloadBtn').addEventListener('click', ()=>{
-  const payload = { total: TOTAL_ROUNDS, scores, ranking: SUBJECTS.map(s=>({subject:s.id, score:scores[s.id]})).sort((a,b)=>b.score-a.score), student, timestamp: new Date().toISOString() };
-  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=`흥미결과_${new Date().toISOString().slice(0,10)}.json`; a.click(); URL.revokeObjectURL(url);
+  const payload = {
+    total: TOTAL_ROUNDS,
+    scores,
+    ranking: SUBJECTS
+      .map(s=>({subject:s.id, score:scores[s.id]}))
+      .sort((a,b)=>b.score-a.score),
+    student,
+    timestamp: new Date().toISOString()
+  };
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=`흥미결과_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
 });
+
+/* ==== 사운드 토글 버튼 ==== */
+const soundBtn = document.getElementById('soundToggle');
+if (soundBtn) {
+  soundBtn.textContent = "🔊 사운드 ON"; // 현재 OFF → 누르면 ON
+
+  soundBtn.addEventListener('click', () => {
+    soundEnabled = !soundEnabled;
+
+    if (soundEnabled) {
+      soundBtn.textContent = "🔇 사운드 OFF";
+    } else {
+      soundBtn.textContent = "🔊 사운드 ON";
+    }
+    updateBgmForPage();
+  });
+}
+
 /* ==== 초기화 ==== */
 document.getElementById('roundTotal').textContent = TOTAL_ROUNDS;
 document.getElementById('stepMax').textContent   = TOTAL_ROUNDS;
 loadStudent();
 showPage('page-start');
 </script>
-<script>
-  /* ==== 사운드 상태 ==== */
-  let soundEnabled = false;   // 기본 OFF (소리 안 남)
 
-  /* 공용: 카드 클릭 효과음 재생 함수 */
-  function playClickSound() {
-    if (!soundEnabled) return;   // 사운드 OFF면 그냥 종료
-
-    const sound = document.getElementById('clickSound');
-    if (!sound) return;
-
-    sound.currentTime = 0;
-    sound.play().catch(() => {});
-  }
-
-  /* ==== 공통 클릭 이벤트 ==== */
-  document.addEventListener('click', (e) => {
-
-    /* 정보입력 → 본게임 */
-    if (e.target.closest('#infoToGame')) {
-      try { saveStudent(); } catch {}
-      try { showPage('page-game'); } catch {}
-      try { renderStep(); } catch {}
-    }
-
-    /* 정보 초기화 */
-    if (e.target.closest('#infoClear')) {
-      ['school','grade','name'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.value = '';
-      });
-      try { saveStudent(); } catch {}
-    }
-
-    /* 🎵 카드 클릭하면 효과음 재생 */
-    if (e.target.closest('.card')) {
-      playClickSound();
-    }
-  });
-
-  /* ==== 초기화 ==== */
-  document.getElementById('roundTotal').textContent = TOTAL_ROUNDS;
-  document.getElementById('stepMax').textContent   = TOTAL_ROUNDS;
-  loadStudent();
-  showPage('page-start');
-
-  /* ==== 버튼 클릭 이벤트 ==== */
-  document.getElementById('startToInfo')?.addEventListener('click', () => {
-    showPage('page-info');
-  });
-
-  document.getElementById('infoToGame')?.addEventListener('click', () => {
-    saveStudent();
-    showPage('page-game');
-    renderStep();
-  });
-
-  document.getElementById('infoClear')?.addEventListener('click', () => {
-    ['school', 'grade', 'name'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.value = '';
-    });
-    saveStudent();
-  });
-
-  /* ==== 사운드 토글 ==== */
-  const soundBtn    = document.getElementById('soundToggle');
-  const startSound  = document.getElementById('startSound');
-  const finishSound = document.getElementById('finishSound');
-
-  if (soundBtn) {
-    // 초기 텍스트: 현재는 OFF 상태니까 "ON"을 보여줌 (누르면 켜지니까)
-    soundBtn.textContent = "🔊 사운드 ON";
-
-    soundBtn.addEventListener('click', () => {
-      soundEnabled = !soundEnabled;
-
-     if (soundEnabled) {
-  soundBtn.textContent = "🔇 사운드 OFF";
-
-  // ⭐ 현재 화면이 시작화면일 때만 시작음 재생
-  const startPage = document.getElementById('page-start');
-  if (startPage && !startPage.classList.contains('hidden')) {
-    startSound.currentTime = 0;
-    startSound.play().catch(()=>{});
-  }
-}
-       else {
-        // 소리 꺼짐 → 버튼엔 "ON" (누르면 켜짐)
-        soundBtn.textContent = "🔊 사운드 ON";
-        [startSound, finishSound, document.getElementById('clickSound')].forEach(a => {
-          if (!a) return;
-          a.pause();
-          a.currentTime = 0;
-        });
-      }
-    });
-  }
-</script>
 
 <!-- 🎵 오디오 태그는 반드시 script 밖! -->
 <audio id="clickSound" src="sounds/click.mp3" preload="auto"></audio>
-<audio id="finishSound" src="sounds/finish.mp3" preload="auto" loop></audio> 
+
 </body>
 </html>
