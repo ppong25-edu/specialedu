@@ -556,7 +556,10 @@ function showPage(id) {
     if (finishSound) { finishSound.pause(); finishSound.currentTime = 0; }
   }
 }
-$('#navStart').addEventListener('click', ()=>showPage('page-start'));
+$('#navStart').addEventListener('click', () => {
+  resetGameState();        // ← 상태 싹 리셋
+  showPage('page-start');  // ← 화면만 처음 페이지로
+});
 $('#navInfo').addEventListener('click', ()=>{ showPage('page-info'); loadStudent(); });
 $('#navGame').addEventListener('click', ()=>{ showPage('page-game'); renderStep(); });
 $('#printBtn').addEventListener('click', ()=>window.print());
