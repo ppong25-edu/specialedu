@@ -507,24 +507,41 @@ function choiceCard(d){
       <div class="illus">
         <div class="wrap">
           <img alt="${d.key}">
-          <div class="svgwrap">${svgFallback(d.key)}</div>
+          <div class="svgwrap" style="display:none;"></div>
         </div>
       </div>
       <div class="title">${d.highlight}</div>
     </div>`;
 
   const img = el.querySelector('img');
-  const svg = el.querySelector('.svgwrap');
+  const svgWrap = el.querySelector('.svgwrap');
   const src = imageFor(d.key, d.highlight);
 
-  const showImg = () => { img.style.display='block'; svg.style.display='none'; };
-  const showSvg = () => { img.style.display='none';  svg.style.display='block'; };
+  // 처음엔 SVG 안 보이게 (로딩 중엔 그냥 흰 배경만 보이게)
+  svgWrap.style.display = 'none';
 
-  img.addEventListener('load', showImg);
-  img.addEventListener('error', showSvg);
+  // 실제 이미지 로드 성공 시 → 이미지만 보이게
+  img.addEventListener('load', () => {
+    img.style.display    = 'block';
+    svgWrap.style.display = 'none';
+  });
+
+  // 이미지 로드 실패 시 → SVG fallback 보이게
+  img.addEventListener('error', () => {
+    img.style.display    = 'none';
+    svgWrap.style.display = 'block';
+    svgWrap.innerHTML = svgFallback(d.key);
+  });
+
+  // 이미지 로딩 시작
   img.src = src;
-  if (img.complete && img.naturalWidth > 0) showImg();
+  if (img.complete && img.naturalWidth > 0) {
+    // 캐시되어 바로 로딩된 경우
+    img.style.display    = 'block';
+    svgWrap.style.display = 'none';
+  }
 
+  // 카드 클릭 시 효과음 + 선택 처리
   el.querySelector('.illus').addEventListener('click', ()=>{
     playClickSound();
     choose(d.id);
@@ -532,6 +549,7 @@ function choiceCard(d){
 
   return el;
 }
+
 
 /* ==== 진행 로직 ==== */
 let rounds = [];
