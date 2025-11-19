@@ -579,20 +579,22 @@ showPage('page-start');
 </script>
 <script>
   /* ==== 사운드 상태 ==== */
-  let soundEnabled = false;   // 기본 OFF
+  let soundEnabled = false;   // 기본 OFF (소리 안 남)
 
-  /* 공용: 클릭 효과음 재생 함수 */
+  /* 공용: 카드 클릭 효과음 재생 함수 */
   function playClickSound() {
-    if (!soundEnabled) return;                 // 사운드 OFF면 재생 X
+    if (!soundEnabled) return;   // 사운드 OFF면 그냥 종료
+
     const sound = document.getElementById('clickSound');
     if (!sound) return;
+
     sound.currentTime = 0;
     sound.play().catch(() => {});
   }
-</script>
- <script>
+
   /* ==== 공통 클릭 이벤트 ==== */
   document.addEventListener('click', (e) => {
+
     /* 정보입력 → 본게임 */
     if (e.target.closest('#infoToGame')) {
       try { saveStudent(); } catch {}
@@ -607,6 +609,11 @@ showPage('page-start');
         if (el) el.value = '';
       });
       try { saveStudent(); } catch {}
+    }
+
+    /* 🎵 카드 클릭하면 효과음 재생 */
+    if (e.target.closest('.card')) {
+      playClickSound();
     }
   });
 
@@ -635,59 +642,36 @@ showPage('page-start');
     saveStudent();
   });
 
-  /* ==== 사운드 토글 + 재생 ==== */
-  (function initSound() {
-    const soundBtn    = document.getElementById('soundToggle');
-    const startSound  = document.getElementById('startSound');
-    const finishSound = document.getElementById('finishSound');
-    const clickSound  = document.getElementById('clickSound');
+  /* ==== 사운드 토글 ==== */
+  const soundBtn    = document.getElementById('soundToggle');
+  const startSound  = document.getElementById('startSound');
+  const finishSound = document.getElementById('finishSound');
 
-    // 요소 못 찾으면 그냥 종료 (에러 방지)
-    if (!soundBtn || !startSound || !finishSound) return;
-
-    // 전역에서 쓸 수 있게 윈도우에 붙여 두기
-    window.__soundEnabled = false;
-
-    // 처음 화면: 소리 꺼진 상태 → 버튼엔 "사운드 ON" (누르면 켜짐)
+  if (soundBtn) {
+    // 초기 텍스트: 현재는 OFF 상태니까 "ON"을 보여줌 (누르면 켜지니까)
     soundBtn.textContent = "🔊 사운드 ON";
 
     soundBtn.addEventListener('click', () => {
-      window.__soundEnabled = !window.__soundEnabled;
+      soundEnabled = !soundEnabled;
 
-      if (window.__soundEnabled) {
-        // 소리 켜짐 → 버튼엔 "사운드 OFF" (누르면 꺼짐)
+      if (soundEnabled) {
+        // 소리 켜짐 → 버튼엔 "OFF" (누르면 꺼짐)
         soundBtn.textContent = "🔇 사운드 OFF";
-        startSound.currentTime = 0;
-        startSound.play().catch(()=>{});
+        if (startSound) {
+          startSound.currentTime = 0;
+          startSound.play().catch(()=>{});
+        }
       } else {
-        // 소리 꺼짐 → 버튼엔 "사운드 ON" (누르면 켜짐)
+        // 소리 꺼짐 → 버튼엔 "ON" (누르면 켜짐)
         soundBtn.textContent = "🔊 사운드 ON";
-        [startSound, finishSound, clickSound].forEach(a => {
+        [startSound, finishSound, document.getElementById('clickSound')].forEach(a => {
           if (!a) return;
           a.pause();
           a.currentTime = 0;
         });
       }
     });
-
-    /* 카드 클릭할 때 효과음 */
-    document.addEventListener('click', (e) => {
-      if (!window.__soundEnabled) return;
-      if (!clickSound) return;
-      if (!e.target.closest('.card')) return;
-
-      clickSound.currentTime = 0;
-      clickSound.play().catch(()=>{});
-    });
-
-    /* finish()에서 쓸 수 있게 전역 함수로 노출 */
-    window.playFinishSound = function() {
-      if (!window.__soundEnabled) return;
-      if (!finishSound) return;
-      finishSound.currentTime = 0;
-      finishSound.play().catch(()=>{});
-    };
-  })();
+  }
 </script>
 
 <!-- 🎵 오디오 태그는 반드시 script 밖! -->
