@@ -609,20 +609,37 @@ function finish(){
   const grid = $('#rankGrid');
   grid.innerHTML='';
 
-  ranking.forEach((r,i)=>{
-    const div=document.createElement('div');
-    div.className='badge';
-    const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
-    div.innerHTML = `
-      <h4>
-        <span class="rank">${i+1}위</span> ${medal} ${r.subject.id}
-        <span class="muted">(${r.score}점)</span>
-      </h4>
-      <ul style="margin:0; padding-left:18px; font-size:13px;">
-        ${r.subject.activities.slice(0,4).map(a=>`<li>${a}</li>`).join('')}
-      </ul>`;
-    grid.appendChild(div);
-  });
+  let lastScore = null;
+let lastRank  = 0;
+
+ranking.forEach((r, idx) => {
+  const div = document.createElement('div');
+  div.className = 'badge';
+
+  // 점수가 처음 나오거나, 이전 과목보다 낮을 때만 순위 번호 업데이트
+  if (lastScore === null || r.score < lastScore) {
+    lastRank = idx + 1;      // 실제로 몇 번째에 있는지
+    lastScore = r.score;
+  }
+  const rankNum = lastRank;  // 표시할 순위 번호
+
+  const medal =
+    rankNum === 1 ? '🥇' :
+    rankNum === 2 ? '🥈' :
+    rankNum === 3 ? '🥉' : '';
+
+  div.innerHTML = `
+    <h4>
+      <span class="rank">${rankNum}위</span> ${medal} ${r.subject.id}
+      <span class="muted">(${r.score}점)</span>
+    </h4>
+    <ul style="margin:0; padding-left:18px; font-size:13px;">
+      ${r.subject.activities.slice(0,4).map(a=>`<li>${a}</li>`).join('')}
+    </ul>`;
+
+  grid.appendChild(div);
+});
+
 
   window.scrollTo(0,0);
 }
